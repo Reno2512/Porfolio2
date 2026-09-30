@@ -560,7 +560,7 @@ html.lenis, html.lenis body { height: auto; }
 }
 
 /* SplitText masks: leave room for descenders and italic overhang */
-.split-line-mask, .split-word-mask {
+.split-line-mask, .split-word-mask, .split-char-mask {
   padding: 0 0.06em 0.14em 0;
   margin: 0 -0.06em -0.14em 0;
 }
@@ -776,6 +776,234 @@ html.lenis, html.lenis body { height: auto; }
   .xp-fill { inset: 0 -20px; }
   .xp-inner { grid-template-columns: 1fr; gap: 16px; }
   .xp-stack { justify-content: flex-start; }
+}
+
+/* ============== PROJECTS ============== */
+.projects-stack {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 8vh;
+}
+.project-card {
+  --i: 0;
+  position: sticky;
+  top: calc(12vh + var(--i) * 28px);
+  min-height: min(76vh, 660px);
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  background: var(--bg-2);
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  overflow: hidden;
+  transform-origin: 50% 0%;
+  will-change: transform;
+  box-shadow: 0 -30px 60px -30px rgb(0 0 0 / 0.6);
+}
+.project-info {
+  padding: clamp(28px, 3.5vw, 52px);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 28px;
+}
+.project-meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.18em;
+  color: var(--fg-mute);
+}
+.project-index { color: var(--accent); white-space: nowrap; }
+.project-name {
+  font-family: 'Instrument Serif', serif;
+  font-weight: 400;
+  font-size: clamp(64px, 9vw, 150px);
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+}
+.project-client {
+  margin-top: 12px;
+  font-size: 15px;
+  color: var(--fg);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.project-client::before {
+  content: '';
+  width: 6px; height: 6px;
+  border-radius: 50%;
+  background: var(--accent);
+  flex-shrink: 0;
+}
+.project-desc {
+  margin-top: 16px;
+  max-width: 520px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--fg-dim);
+}
+.project-features {
+  list-style: none;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px 24px;
+}
+.project-features li {
+  font-size: 13px;
+  line-height: 1.4;
+  color: var(--fg-dim);
+  padding-left: 18px;
+  position: relative;
+}
+.project-features li::before {
+  content: '';
+  position: absolute;
+  left: 0; top: 0.6em;
+  width: 8px; height: 1px;
+  background: var(--accent);
+}
+.project-stack { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.project-visual {
+  position: relative;
+  background:
+    radial-gradient(circle at 50% 45%, color-mix(in oklch, var(--accent) 10%, transparent), transparent 60%),
+    var(--bg-3);
+  border-left: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 32px;
+  overflow: hidden;
+}
+.project-modules {
+  position: absolute;
+  left: 20px; right: 20px; bottom: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  justify-content: center;
+}
+.project-modules span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+  padding: 6px 10px;
+  border-radius: 100px;
+  background: color-mix(in oklch, var(--bg) 70%, transparent);
+  border: 1px solid var(--line);
+  color: var(--fg-dim);
+}
+
+/* Visual: radar (BNSP) */
+.pv { position: relative; width: min(100%, 360px); aspect-ratio: 1; margin-bottom: 40px; }
+.pv-rings, .pv-rings span {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+}
+.pv-rings span { border: 1px solid color-mix(in oklch, var(--accent) 22%, transparent); }
+.pv-rings span:nth-child(2) { inset: 12.5%; }
+.pv-rings span:nth-child(3) { inset: 25%; }
+.pv-rings span:nth-child(4) { inset: 37.5%; background: color-mix(in oklch, var(--accent) 6%, transparent); }
+.pv-cross {
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(var(--line), var(--line)) center / 1px 100% no-repeat,
+    linear-gradient(var(--line), var(--line)) center / 100% 1px no-repeat;
+  border-radius: 50%;
+}
+.pv-sweep {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: conic-gradient(from 0deg, color-mix(in oklch, var(--accent) 45%, transparent), transparent 22%);
+  animation: sweep 3.5s linear infinite;
+}
+@keyframes sweep { to { transform: rotate(360deg); } }
+.pv-blip {
+  position: absolute;
+  width: 10px; height: 10px;
+  margin: -5px 0 0 -5px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 16px var(--accent);
+  animation: blip 3.5s var(--ease-out) infinite;
+}
+.pv-blip::after {
+  content: '';
+  position: absolute;
+  inset: -8px;
+  border-radius: 50%;
+  border: 1px solid var(--accent);
+  animation: ping 3.5s var(--ease-out) infinite;
+  animation-delay: inherit;
+}
+@keyframes blip {
+  0%, 100% { opacity: 0.25; transform: scale(0.7); }
+  12% { opacity: 1; transform: scale(1.15); }
+  40% { opacity: 0.8; transform: scale(1); }
+}
+
+/* Visual: route (PTS) */
+.pv-route svg { width: 100%; height: 100%; overflow: visible; }
+.pv-route-bg {
+  fill: none;
+  stroke: var(--line);
+  stroke-width: 2;
+  stroke-dasharray: 4 8;
+}
+.pv-route-line {
+  fill: none;
+  stroke: var(--accent);
+  stroke-width: 2;
+  stroke-linecap: round;
+  stroke-dasharray: 1;
+  stroke-dashoffset: 1;
+  animation: draw-route 4s var(--ease-in-out) infinite;
+}
+@keyframes draw-route {
+  0% { stroke-dashoffset: 1; }
+  70%, 85% { stroke-dashoffset: 0; }
+  100% { stroke-dashoffset: -1; }
+}
+.pv-stop-dot { fill: var(--fg); }
+.pv-stop-halo {
+  fill: color-mix(in oklch, var(--accent) 20%, transparent);
+  stroke: var(--accent);
+  stroke-width: 1;
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: stop-pulse 4s var(--ease-out) infinite;
+}
+@keyframes stop-pulse {
+  0%, 100% { transform: scale(0.6); opacity: 0.3; }
+  30% { transform: scale(1.2); opacity: 1; }
+}
+.pv-truck rect {
+  fill: var(--accent);
+  filter: drop-shadow(0 0 8px var(--accent));
+}
+
+@media (max-width: 900px) {
+  .project-card {
+    position: relative;
+    top: 0;
+    min-height: 0;
+    grid-template-columns: 1fr;
+  }
+  .project-visual { border-left: 0; border-top: 1px solid var(--line); min-height: 320px; gap: 24px; }
+  .project-modules { position: static; }
+  .pv { margin-bottom: 0; }
+  .project-features { grid-template-columns: 1fr; }
 }
 
 /* ============== MARQUEE ============== */

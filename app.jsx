@@ -59,6 +59,44 @@ const EXPERIENCES = [
   },
 ];
 
+// Projets livrés chez Globo Afrique. `draft: true` = masqué tant que la fiche n'est pas complétée.
+const PROJECTS = [
+  {
+    name: "BNSP",
+    client: "Brigade Nationale des Sapeurs-Pompiers",
+    year: "2025",
+    kind: "Gestion des interventions",
+    desc: "Suite applicative pour piloter les interventions des sapeurs-pompiers : déclaration et priorisation des interventions, affectation des équipes, suivi du matériel et contrôle d'accès par rôles.",
+    modules: ["Back-office", "Espace pompier", "Espace citoyen", "API REST"],
+    features: [
+      "Interventions géolocalisées et priorisées",
+      "Affectation des équipes sur le terrain",
+      "Inventaire des ressources avec pièces jointes",
+      "Rôles et permissions granulaires",
+    ],
+    stack: ["React", "Angular", "Node.js", "Express", "MySQL"],
+    visual: "radar",
+  },
+  {
+    name: "PTS",
+    client: "Petrosen",
+    year: "2024",
+    kind: "Suivi des livraisons",
+    desc: "Plateforme de suivi des livraisons de produits pétroliers : de la commande client jusqu'à la livraison, avec la gestion des transporteurs, des chauffeurs et des camions à compartiments.",
+    modules: ["Commandes", "Flotte", "Livraisons", "Incidents"],
+    features: [
+      "Transporteurs, chauffeurs et camions compartimentés",
+      "Commandes clients et produits",
+      "Suivi des livraisons par étapes et statuts",
+      "Déclaration d'incidents et documents",
+    ],
+    stack: ["Angular", "Laravel", "MySQL"],
+    visual: "route",
+  },
+  { name: "Globo Fleet", draft: true },
+  { name: "SIAGRO", draft: true },
+];
+
 const SKILLS = {
   "Back-end": [
     ["Java", "expert"],
@@ -371,9 +409,10 @@ function Nav() {
   const links = [
     ['about', '01', 'À propos'],
     ['work', '02', 'Expériences'],
-    ['skills', '03', 'Stack'],
-    ['edu', '04', 'Formation'],
-    ['contact', '05', 'Contact'],
+    ['projects', '03', 'Projets'],
+    ['skills', '04', 'Stack'],
+    ['edu', '05', 'Formation'],
+    ['contact', '06', 'Contact'],
   ];
   return (
     <nav className="nav">
@@ -407,7 +446,7 @@ function Hero() {
         </div>
         <div className="meta-block hero-fade">
           <div className="label">Index</div>
-          <div className="value">001 / 005</div>
+          <div className="value">001 / 006</div>
         </div>
       </div>
 
@@ -582,11 +621,85 @@ function Experience() {
   );
 }
 
+function ProjectVisual({ type }) {
+  if (type === 'radar') {
+    return (
+      <div className="pv pv-radar" aria-hidden="true">
+        <div className="pv-rings"><span></span><span></span><span></span><span></span></div>
+        <div className="pv-sweep"></div>
+        {[[28, 34], [64, 22], [72, 66], [38, 70], [52, 48]].map(([x, y], i) => (
+          <span className="pv-blip" key={i} style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${i * 0.7}s` }}></span>
+        ))}
+        <div className="pv-cross"></div>
+      </div>
+    );
+  }
+  const d = "M 30 250 C 110 250 110 90 200 110 S 300 250 370 60";
+  return (
+    <div className="pv pv-route" aria-hidden="true">
+      <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
+        <path className="pv-route-bg" d={d} />
+        <path className="pv-route-line" d={d} pathLength="1" />
+        {[[30, 250], [200, 110], [370, 60]].map(([x, y], i) => (
+          <g key={i} className="pv-stop" style={{ animationDelay: `${i * 1.3}s` }}>
+            <circle cx={x} cy={y} r="14" className="pv-stop-halo" />
+            <circle cx={x} cy={y} r="5" className="pv-stop-dot" />
+          </g>
+        ))}
+        <g className="pv-truck">
+          <rect x="-9" y="-6" width="18" height="12" rx="3" />
+          <animateMotion dur="4s" repeatCount="indefinite" path={d} rotate="auto" keyPoints="0;1;1" keyTimes="0;0.7;1" calcMode="spline" keySplines="0.87 0 0.13 1;0 0 1 1" />
+          <animate attributeName="opacity" dur="4s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;0.08;0.7;0.85;1" />
+        </g>
+      </svg>
+    </div>
+  );
+}
+
+function Projects() {
+  const list = PROJECTS.filter(p => !p.draft);
+  return (
+    <section className="section" id="projects">
+      <span className="rule"></span>
+      <SectionHead num="03" label="Projets" title="Livré chez Globo Afrique." />
+      <div className="projects-stack">
+        {list.map((p, i) => (
+          <article className="project-card" key={p.name} style={{ '--i': i }}>
+            <div className="project-info">
+              <div className="project-meta">
+                <span className="project-index">{String(i + 1).padStart(2, '0')} / {String(list.length).padStart(2, '0')}</span>
+                <span>{p.kind} · {p.year}</span>
+              </div>
+              <div>
+                <h3 className="project-name">{p.name}</h3>
+                <div className="project-client">{p.client}</div>
+                <p className="project-desc">{p.desc}</p>
+              </div>
+              <ul className="project-features">
+                {p.features.map(f => <li key={f}>{f}</li>)}
+              </ul>
+              <div className="project-stack">
+                {p.stack.map(t => <span className="xp-pill" key={t}>{t}</span>)}
+              </div>
+            </div>
+            <div className="project-visual">
+              <ProjectVisual type={p.visual} />
+              <div className="project-modules">
+                {p.modules.map(m => <span key={m}>{m}</span>)}
+              </div>
+            </div>
+          </article>
+        ))}
+      </div>
+    </section>
+  );
+}
+
 function Skills() {
   return (
     <section className="section" id="skills">
       <span className="rule"></span>
-      <SectionHead num="03" label="Compétences" title="La stack." />
+      <SectionHead num="04" label="Compétences" title="La stack." />
 
       <Marquee />
 
@@ -614,7 +727,7 @@ function Education() {
   return (
     <section className="section" id="edu">
       <span className="rule"></span>
-      <SectionHead num="04" label="Formation" title="Le parcours." />
+      <SectionHead num="05" label="Formation" title="Le parcours." />
 
       <div className="edu-list">
         {EDUCATION.map((e, i) => (
@@ -636,7 +749,7 @@ function Contact() {
     <section className="cta" id="contact">
       <span className="rule"></span>
       <div className="cta-orb" aria-hidden="true"></div>
-      <div className="cta-pre" data-scramble>[05] · Travaillons ensemble</div>
+      <div className="cta-pre" data-scramble>[06] · Travaillons ensemble</div>
       <h2 className="cta-title">
         Un projet <em>ambitieux ?</em><br />
         Discutons-en.
@@ -961,6 +1074,43 @@ function buildExperience() {
   };
 }
 
+function buildProjects() {
+  const cards = gsap.utils.toArray('.project-card');
+  const stacked = window.matchMedia('(min-width: 901px)').matches;
+
+  cards.forEach((card, i) => {
+    SplitText.create(card.querySelector('.project-name'), {
+      type: 'chars',
+      mask: 'chars',
+      charsClass: 'split-char',
+      autoSplit: true,
+      onSplit: (self) => gsap.from(self.chars, {
+        yPercent: 110,
+        duration: 1.2,
+        stagger: 0.05,
+        ease: 'expo.out',
+        scrollTrigger: { trigger: card, start: 'top 75%' },
+      }),
+    });
+    gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 75%' } })
+      .from(card.querySelectorAll('.project-meta, .project-client, .project-desc'), { autoAlpha: 0, y: 24, duration: 1, stagger: 0.08, ease: 'expo.out' }, 0.2)
+      .from(card.querySelectorAll('.project-features li'), { autoAlpha: 0, x: -20, duration: 0.8, stagger: 0.06, ease: 'expo.out' }, 0.4)
+      .from(card.querySelectorAll('.project-stack .xp-pill, .project-modules span'), { autoAlpha: 0, scale: 0.6, duration: 0.6, stagger: 0.04, ease: 'back.out(2)' }, 0.5)
+      .from(card.querySelector('.pv'), { autoAlpha: 0, scale: 0.85, duration: 1.4, ease: 'expo.out' }, 0.2);
+
+    // Stacked deck: each card recedes as the next one slides over it.
+    const next = cards[i + 1];
+    if (stacked && next) {
+      gsap.to(card, {
+        scale: 0.9,
+        filter: 'brightness(0.45)',
+        ease: 'none',
+        scrollTrigger: { trigger: next, start: 'top bottom', end: 'top 20%', scrub: true },
+      });
+    }
+  });
+}
+
 function buildMarquee() {
   const tracks = gsap.utils.toArray('.marquee-track');
   const wrap = gsap.utils.wrap(-50, 0);
@@ -1137,7 +1287,7 @@ function App() {
       ctx.add(() => {
         buildIntro(lenis);
         buildNav(lenis);
-        [buildHero, buildSections, buildExperience, buildMarquee, buildSkills, buildEducation, buildContact, buildMagnetic]
+        [buildHero, buildSections, buildExperience, buildProjects, buildMarquee, buildSkills, buildEducation, buildContact, buildMagnetic]
           .forEach(fn => { const c = fn(); if (c) cleanups.push(c); });
       });
       ScrollTrigger.refresh();
@@ -1164,6 +1314,7 @@ function App() {
         <Hero />
         <About />
         <Experience />
+        <Projects />
         <Skills />
         <Education />
         <Contact />
