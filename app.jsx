@@ -4,7 +4,7 @@ const { useEffect, useLayoutEffect, useState, useRef } = React;
 const PROFILE = {
   name: "Robert Emmanuel",
   lastName: "Mamadou Sagne",
-  role: "Ingénieur Fullstack",
+  role: "Développeur Fullstack",
   location: "Rufisque Ouest — Sénégal",
   email: "sagneemma25@gmail.com",
   phone: "+221 77 866 20 79",
@@ -27,7 +27,7 @@ const EXPERIENCES = [
     company: "Globo Afrique Dakar",
     mono: "GA",
     role: "Stagiaire",
-    desc: "Conception de plateformes métiers : suivi des livraisons Petrosen et gestion des interventions / affectation des pompiers. Architecture front modulaire, intégration API et tableaux de bord opérationnels.",
+    desc: "Conception de plateformes métiers : écosystème BNSP (back-office et deux PWA), pilotage commercial du Groupe Kirène, refonte de Globo Fleet et suivi des livraisons Petrosen. Architecture front modulaire, intégration API et tableaux de bord opérationnels.",
     stack: ["React", "Angular", "REST", "UI/UX"],
   },
   {
@@ -59,23 +59,89 @@ const EXPERIENCES = [
   },
 ];
 
+// Étude de cas phare : les trois applications BNSP, dans l'ordre où un incident les traverse.
+const BNSP = {
+  client: "Brigade Nationale des Sapeurs-Pompiers",
+  period: "2025 — 2026",
+  apps: [
+    {
+      key: "citoyen",
+      step: "Signaler",
+      name: "PWA Citoyen",
+      who: "Pour le témoin d'un incident, sans compte à créer",
+      desc: "Le citoyen décrit l'incident et joint photo, vidéo et note vocale ; sa position GPS est captée automatiquement. Il suit ensuite son signalement et reçoit une notification dès qu'une équipe le prend en charge.",
+      points: [
+        "Photo, vidéo et audio capturés depuis le navigateur",
+        "Position GPS sur carte, repère ajustable",
+        "Suivi des signalements et notifications push",
+      ],
+      stack: ["Angular 20", "PWA", "Leaflet", "Web Push"],
+    },
+    {
+      key: "admin",
+      step: "Affecter",
+      name: "Back-office",
+      who: "Pour le centre qui reçoit les alertes",
+      desc: "Chaque signalement remonte aussitôt dans le back-office, avec une notification. L'opérateur le situe sur la carte et l'affecte à une équipe disponible, filtrée par région et par type d'intervention.",
+      points: [
+        "Tableau de bord, interventions et géolocalisation",
+        "Équipes, personnel, ressources, rôles et permissions",
+        "Notifications, journal d'activité et mode sombre",
+      ],
+      stack: ["Angular 20", "SSR", "Material", "Leaflet", "Chart.js"],
+    },
+    {
+      key: "pompier",
+      step: "Intervenir",
+      name: "PWA Pompiers",
+      who: "Pour l'équipe sur le terrain",
+      desc: "Les pompiers de l'équipe affectée reçoivent une notification. Un seul prend en charge pour tous ; l'application bascule alors sur la carte, avec l'itinéraire, la distance et le temps de trajet.",
+      points: [
+        "Notification push dès l'affectation",
+        "Prise en charge unique pour toute l'équipe",
+        "Itinéraire, navigation et clôture sur place",
+      ],
+      stack: ["Angular 20", "Signals", "Leaflet", "OSRM"],
+    },
+  ],
+  core: ["Node.js", "Express 5", "Sequelize", "MySQL", "Web Push"],
+};
+
 // Projets livrés chez Globo Afrique. `draft: true` = masqué tant que la fiche n'est pas complétée.
 const PROJECTS = [
   {
-    name: "BNSP",
-    client: "Brigade Nationale des Sapeurs-Pompiers",
-    year: "2025",
-    kind: "Gestion des interventions",
-    desc: "Suite applicative pour piloter les interventions des sapeurs-pompiers : déclaration et priorisation des interventions, affectation des équipes, suivi du matériel et contrôle d'accès par rôles.",
-    modules: ["Back-office", "Espace pompier", "Espace citoyen", "API REST"],
+    name: "Globo Fleet",
+    client: "Globo Afrique · logiciel multi-structures",
+    year: "2026",
+    kind: "Gestion de parc & maintenance",
+    role: "Fullstack — refonte V2 et nouvelles fonctionnalités",
+    desc: "Logiciel de gestion de flotte : actifs, missions, maintenances préventives et curatives, stocks de pièces et achats. Il sert autant le gestionnaire de parc que le magasinier, le technicien ou le chauffeur.",
+    modules: ["Actifs", "Missions", "Maintenances", "Stocks", "Rapports"],
     features: [
-      "Interventions géolocalisées et priorisées",
-      "Affectation des équipes sur le terrain",
-      "Inventaire des ressources avec pièces jointes",
-      "Rôles et permissions granulaires",
+      "Refonte V2 de l'ensemble des écrans",
+      "Check-lists d'inspection paramétrables, signées, exportées en PDF",
+      "Rapports : coûts, disponibilité, immobilisation, km parcourus",
+      "Alertes stock et visites techniques, guide utilisateur complet",
     ],
-    stack: ["React", "Angular", "Node.js", "Express", "MySQL"],
-    visual: "radar",
+    stack: ["Laravel", "PHP", "MySQL", "Blade", "DomPDF"],
+    visual: "gauge",
+  },
+  {
+    name: "Mercurio",
+    client: "Groupe Kirène · SIAGRO",
+    year: "2025 — 2026",
+    kind: "Pilotage commercial",
+    role: "Front-end — conception, intégration API, CI/CD",
+    desc: "Plateforme de pilotage de la distribution du Groupe Kirène. Direction, commerciaux et distributeurs y retrouvent chacun leurs chiffres, leurs commandes et leurs factures, dans un espace pensé pour leur profil.",
+    modules: ["Direction", "Commercial", "Distributeur", "Admin"],
+    features: [
+      "Tableau de bord Direction : 17 analyses du chiffre d'affaires",
+      "Heatmap du CA par zone et par mois, prévu vs réalisé",
+      "Commandes, factures et statut de livraison par distributeur",
+      "Exports PDF / Excel, rôles, permissions et journal d'activité",
+    ],
+    stack: ["Angular 21", "SSR", "ApexCharts", "Chart.js", "GitLab CI"],
+    visual: "heatmap",
   },
   {
     name: "PTS",
@@ -93,9 +159,25 @@ const PROJECTS = [
     stack: ["Angular", "Laravel", "MySQL"],
     visual: "route",
   },
-  { name: "Globo Fleet", draft: true },
-  { name: "SIAGRO", draft: true },
 ];
+
+// Heatmap Mercurio : CA illustratif zone × mois (saisonnalité + poids de zone, bruit déterministe).
+const HEAT_ROWS = 7;
+const HEAT_COLS = 12;
+const HEAT = (() => {
+  let seed = 11;
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  return Array.from({ length: HEAT_ROWS }, (_, r) => Array.from({ length: HEAT_COLS }, (_, c) => {
+    const season = 0.5 + 0.5 * Math.sin(((c - 2) / HEAT_COLS) * Math.PI * 2);
+    const zone = 1 - r / (HEAT_ROWS + 1);
+    // Courbe de puissance : écarte les valeurs pour que la carte ait de vrais creux et de vrais pics.
+    return Math.pow(Math.min(1, 0.1 + season * 0.45 * zone + zone * 0.25 + rnd() * 0.22), 1.9);
+  }));
+})();
+
+// Jauge Globo Fleet : part du parc disponible, et compteur kilométrique.
+const GAUGE_VALUE = 0.86;
+const ODOMETER = "128460";
 
 const SKILLS = {
   "Back-end": [
@@ -146,6 +228,15 @@ const EDUCATION = [
     isCert: true,
   },
 ];
+
+// CV généré depuis cv/cv.html : `node cv/build.mjs` refait le PDF et la vignette.
+const CV = {
+  href: "cv/Robert-Emmanuel-Sagne-CV.pdf",
+  file: "Robert-Emmanuel-Sagne-CV.pdf",
+  preview: "cv/cv-preview.webp",
+  size: "355 Ko",
+  updated: "Sept. 2026",
+};
 
 // ============== MOTION SYSTEM ==============
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -430,7 +521,18 @@ function Nav() {
           </li>
         ))}
       </ul>
-      <div className="nav-time">Dakar · {t}</div>
+      <div className="nav-end">
+        <a href={CV.href} download={CV.file} className="nav-cv" data-magnetic="0.3" aria-label={`Télécharger le CV (PDF, ${CV.size})`}>
+          <span className="nav-cv-ic" aria-hidden="true">
+            <svg viewBox="0 0 12 12" fill="none">
+              <path className="nav-cv-arrow" d="M6 1V8M3 5.2L6 8.2L9 5.2" />
+              <path d="M1.5 11H10.5" />
+            </svg>
+          </span>
+          <span className="roll" data-text="CV"><span>CV</span></span>
+        </a>
+        <div className="nav-time">Dakar · {t}</div>
+      </div>
     </nav>
   );
 }
@@ -456,7 +558,7 @@ function Hero() {
           <span className="line l2" aria-hidden="true"><span className="line-inner ital"><Chars text="Emmanuel" /></span></span>
           <span className="line l3" aria-hidden="true">
             <span className="line-inner"><Chars text="Sagne" /></span>
-            <span className="small-line"><span className="small-rule"></span><span className="small-text">Ingénieur Fullstack · basé à Dakar</span></span>
+            <span className="small-line"><span className="small-rule"></span><span className="small-text">Développeur Fullstack · basé à Dakar</span></span>
           </span>
         </h1>
 
@@ -621,19 +723,338 @@ function Experience() {
   );
 }
 
-function ProjectVisual({ type }) {
-  if (type === 'radar') {
-    return (
-      <div className="pv pv-radar" aria-hidden="true">
-        <div className="pv-rings"><span></span><span></span><span></span><span></span></div>
-        <div className="pv-sweep"></div>
-        {[[28, 34], [64, 22], [72, 66], [38, 70], [52, 48]].map(([x, y], i) => (
-          <span className="pv-blip" key={i} style={{ left: `${x}%`, top: `${y}%`, animationDelay: `${i * 0.7}s` }}></span>
-        ))}
-        <div className="pv-cross"></div>
+// ============== BNSP SCREENS ==============
+// Mockups dessinés en HTML/SVG. Le DOM porte l'état FINAL de chaque scène (repli sans animation) ;
+// les timelines de buildBnsp posent l'état initial puis rejouent la scène.
+const ICONS = {
+  flame: <path d="M12 3c.6 3.4 5 5.6 5 10.4a5 5 0 0 1-10 0c0-2.6 1.5-3.9 2.2-6.1 1.3 1 2 2.3 2.3 3.6.9-2.4 1-5.1.5-7.9z" />,
+  camera: <><path d="M4 8h3.2l1.6-2.5h6.4L16.8 8H20v11H4z" /><circle cx="12" cy="13.2" r="3.2" /></>,
+  video: <><rect x="3" y="7" width="12.5" height="10" rx="2" /><path d="M15.5 11l5.5-3v8l-5.5-3" /></>,
+  mic: <><rect x="9" y="3" width="6" height="11" rx="3" /><path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21" /></>,
+  check: <path d="M5 12.5l4.5 4.5L19 7.5" />,
+  bell: <><path d="M6 16v-5a6 6 0 0 1 12 0v5l1.5 2h-15z" /><path d="M10 20.5a2 2 0 0 0 4 0" /></>,
+  nav: <path d="M4 11.5L20 4l-7.5 16-1.8-6.7z" />,
+};
+
+function Icon({ name }) {
+  return (
+    <svg className="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.9" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+      {ICONS[name]}
+    </svg>
+  );
+}
+
+// Repère de carte dont la pointe est en (0,0) : on le place avec un <g transform> parent.
+function MapPin({ className }) {
+  return (
+    <g className={className}>
+      <ellipse className="map-pin-halo" cx="0" cy="0" rx="7" ry="2.4" />
+      <path className="map-pin-body" d="M0 0C-1.8-3.6-6-6.6-6-10.8a6 6 0 0 1 12 0C6-6.6 1.8-3.6 0 0Z" />
+      <circle className="map-pin-eye" cx="0" cy="-10.8" r="2.2" />
+    </g>
+  );
+}
+
+function Phone({ variant, label, children }) {
+  return (
+    <div className={`phone phone--${variant}`} role="img" aria-label={label}>
+      <div className="phone-screen" aria-hidden="true">
+        <div className="scr-status"><span>10:24</span><span className="scr-bat"></span></div>
+        {children}
       </div>
-    );
-  }
+    </div>
+  );
+}
+
+function ScreenCitoyen() {
+  const types = ['Incendie', 'Accident', 'Inondation', 'Effondrement', 'Malaise'];
+  return (
+    <Phone variant="citoyen" label="Application citoyenne : signalement d'un incendie avec photo, vidéo, audio et position GPS, puis confirmation d'envoi">
+      <div className="cit-head">
+        <span className="cit-logo">BNSP</span>
+        <b>Signaler un incident</b>
+      </div>
+      <div className="cit-label">Type d'incident</div>
+      <div className="cit-types">
+        {types.map((t, i) => i === 0 ? (
+          <span className="cit-type cit-type--on" key={t}>
+            <Icon name="flame" />{t}
+            <span className="cit-type-fill"><Icon name="flame" />{t}</span>
+          </span>
+        ) : <span className="cit-type" key={t}>{t}</span>)}
+      </div>
+      <div className="cit-label">Photo, vidéo et audio</div>
+      <div className="cit-media">
+        {[['camera', 'Photo'], ['video', 'Vidéo'], ['mic', 'Audio']].map(([ic, l]) => (
+          <div className="cit-tile" key={l}>
+            <Icon name={ic} />
+            <span>{l}</span>
+            <span className="cit-check"><Icon name="check" /></span>
+          </div>
+        ))}
+      </div>
+      <div className="cit-label">Position</div>
+      <div className="cit-map">
+        <svg viewBox="0 0 160 110" preserveAspectRatio="xMidYMid slice">
+          <rect className="map-block" x="46" y="58" width="50" height="18" rx="2" />
+          <rect className="map-block" x="112" y="24" width="30" height="18" rx="2" />
+          <path className="map-street" d="M0 18H160M0 50H160M0 84H160M38 0V110M104 0V110" />
+          <path className="map-street map-street--main" d="M0 104L160 10" />
+          <g transform="translate(71 50)"><MapPin className="cit-pin" /></g>
+        </svg>
+        <span className="cit-gps">GPS · ±8 m</span>
+      </div>
+      <div className="cit-send">Envoyer le signalement</div>
+      <div className="cit-sheet">
+        <span className="cit-sheet-ic"><Icon name="check" /></span>
+        <b>Signalement envoyé</b>
+        <small>Vous serez notifié dès la prise en charge</small>
+      </div>
+    </Phone>
+  );
+}
+
+function ScreenAdmin() {
+  const teams = [['Équipe Alpha', 'Disponible', 'ok'], ['Équipe Delta', 'Disponible', 'ok'], ['Équipe Bravo', 'En mission', 'busy']];
+  return (
+    <div className="browser" role="img" aria-label="Back-office : un nouveau signalement apparaît sur la carte et est affecté à l'équipe Alpha, qui est notifiée">
+      <div className="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span className="browser-tab">GISP · Interventions</span></div>
+      <div className="adm" aria-hidden="true">
+        <aside className="adm-rail">
+          <span className="adm-logo"></span>
+          {[0, 1, 2, 3, 4].map(i => <i key={i} className={i === 1 ? 'is-on' : ''}></i>)}
+        </aside>
+        <div className="adm-main">
+          <div className="adm-top">
+            <b>Interventions</b>
+            <span className="adm-bell"><Icon name="bell" /><em className="adm-badge">1</em></span>
+          </div>
+          <div className="adm-kpis">
+            <div className="adm-kpi adm-kpi--wait"><small>En attente</small><b className="adm-n-wait">0</b></div>
+            <div className="adm-kpi"><small>En cours</small><b className="adm-n-run">3</b></div>
+            <div className="adm-kpi"><small>Clôturées</small><b>14</b></div>
+          </div>
+          <div className="adm-map">
+            <div className="adm-sweep"></div>
+            <svg viewBox="0 0 200 110" preserveAspectRatio="xMidYMid slice">
+              <rect className="map-block" x="98" y="52" width="46" height="20" rx="2" />
+              <rect className="map-block" x="36" y="84" width="46" height="10" rx="2" />
+              <path className="map-street" d="M0 22H200M0 44H200M0 78H200M0 96H200M30 0V110M90 0V110M150 0V110" />
+              <path className="map-street map-street--main" d="M0 104L200 8" />
+              <path className="adm-link" d="M58 78H90V44H122" pathLength="1" />
+              {[[40, 22], [150, 96]].map(([x, y], i) => <circle className="adm-team" cx={x} cy={y} r="3" key={i} />)}
+              <circle className="adm-team adm-team--alpha" cx="58" cy="78" r="3.4" />
+              <g transform="translate(122 44)">
+                <g className="adm-incident">
+                  <circle className="adm-incident-ping" r="4" />
+                  <circle className="adm-incident-dot" r="4" />
+                </g>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div className="adm-pop">
+          <b>Affecter une équipe</b>
+          <small>Filtrées par type · Incendie</small>
+          {teams.map(([n, s, st], i) => (
+            <div className={`adm-row adm-row--${st}${i === 0 ? ' adm-row--pick' : ''}`} key={n}>
+              {i === 0 && <span className="adm-row-hl"></span>}
+              <span className="adm-row-dot"></span><span>{n}</span><em>{s}</em>
+            </div>
+          ))}
+          <span className="adm-assign">Affecter</span>
+        </div>
+        <div className="adm-toast"><Icon name="check" />Équipe Alpha notifiée</div>
+      </div>
+    </div>
+  );
+}
+
+function ScreenPompier() {
+  return (
+    <Phone variant="pompier" label="Application pompiers : notification d'intervention, prise en charge, puis itinéraire vers l'incident">
+      <div className="pmp-top">
+        <b>En cours</b>
+        <span className="pmp-state">En intervention</span>
+      </div>
+      <div className="pmp-stage">
+        <div className="pmp-map">
+          <svg viewBox="0 0 100 130" preserveAspectRatio="xMidYMid slice">
+            <rect className="map-block" x="28" y="68" width="18" height="22" rx="2" />
+            <rect className="map-block" x="58" y="40" width="14" height="16" rx="2" />
+            <path className="map-street" d="M0 34H100M0 62H100M0 96H100M0 110H100M22 0V130M52 0V130M78 0V130" />
+            <path className="map-street map-street--main" d="M0 128L100 72" />
+            <path className="pmp-route" d="M22 110V96H52V62H78V38" pathLength="1" />
+            <g transform="translate(22 110)">
+              <circle className="pmp-me-halo" r="5" />
+              <circle className="pmp-me" r="2.6" />
+            </g>
+            <g transform="translate(78 38)"><MapPin className="pmp-target" /></g>
+          </svg>
+          <div className="pmp-chip"><b>2,4 km</b><span>6 min</span></div>
+        </div>
+        <div className="pmp-empty"><span className="live"></span>En attente d'affectation</div>
+        <div className="pmp-card">
+          <div className="pmp-band"><Icon name="flame" />Incendie<em>Priorité haute</em></div>
+          <p>Départ de feu dans un entrepôt, fumée visible depuis la route.</p>
+          <small>Affectée à 10:26</small>
+          <span className="pmp-take">Prendre en charge</span>
+          <span className="pmp-more">Voir les détails</span>
+        </div>
+      </div>
+      <div className="pmp-actions">
+        <span className="pmp-btn pmp-btn--nav"><Icon name="nav" />Naviguer</span>
+        <span className="pmp-btn">Terminer</span>
+      </div>
+      <nav className="pmp-tabs"><span className="is-on">En cours</span><span>Historique</span></nav>
+      <div className="pmp-push">
+        <span className="pmp-push-ic"><Icon name="flame" /></span>
+        <div><b>Nouvelle intervention</b><small>Incendie · priorité haute</small></div>
+        <em>maintenant</em>
+      </div>
+    </Phone>
+  );
+}
+
+const SCREENS = { citoyen: ScreenCitoyen, admin: ScreenAdmin, pompier: ScreenPompier };
+
+function BnspCase() {
+  return (
+    <div className="bnsp">
+      <div className="bnsp-pin">
+        <div className="bnsp-head">
+          <span><b>Étude de cas</b> · BNSP</span>
+          <span>{BNSP.client}</span>
+          <span>{BNSP.period}</span>
+        </div>
+
+        <div className="bnsp-track">
+          <div className="bnsp-intro">
+            <h3 className="bnsp-intro-title">Un incident, <em>trois applications,</em> une seule chaîne.</h3>
+            <p className="bnsp-lead">
+              Le citoyen signale, le centre affecte, l'équipe intervient. J'ai conçu et développé les trois interfaces de l'écosystème BNSP, branchées sur une même API.
+            </p>
+            <div className="bnsp-hint"><span className="bnsp-hint-dot"></span>Suivez l'incident</div>
+          </div>
+
+          {BNSP.apps.map((a, i) => {
+            const Screen = SCREENS[a.key];
+            return (
+              <article className={`bnsp-panel bnsp-panel--${a.key}`} data-scene={a.key} key={a.key}>
+                <div className="bnsp-copy">
+                  <div className="bnsp-step"><span className="n">{String(i + 1).padStart(2, '0')}</span>{a.step}</div>
+                  <h4 className="bnsp-app">{a.name}</h4>
+                  <div className="bnsp-who">{a.who}</div>
+                  <p className="bnsp-desc">{a.desc}</p>
+                  <ul className="bnsp-points">
+                    {a.points.map(pt => <li key={pt}>{pt}</li>)}
+                  </ul>
+                  <div className="project-stack">
+                    {a.stack.map(t => <span className="xp-pill" key={t}>{t}</span>)}
+                  </div>
+                </div>
+                <div className="bnsp-device"><Screen /></div>
+              </article>
+            );
+          })}
+
+          <div className="bnsp-outro">
+            <h3 className="bnsp-outro-title">Du signalement à l'intervention, <em>sans ressaisie.</em></h3>
+            <p className="bnsp-lead">
+              Les trois applications partagent la même API. Chaque changement de statut part en notification push, avec une synchronisation de secours toutes les 30 secondes quand l'application est ouverte.
+            </p>
+            <div className="project-stack">
+              {BNSP.core.map(t => <span className="xp-pill" key={t}>{t}</span>)}
+            </div>
+          </div>
+        </div>
+
+        <div className="bnsp-rail" aria-hidden="true">
+          <span className="bnsp-rail-fill"></span>
+          {BNSP.apps.map((a, i) => (
+            <span className="bnsp-node" key={a.key}>
+              <span>{String(i + 1).padStart(2, '0')} · {a.step}</span>
+            </span>
+          ))}
+          <span className="bnsp-packet-track"><span className="bnsp-packet"></span></span>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ============== PROJECT VISUALS ==============
+function HeatmapVisual() {
+  const months = 'JFMAMJJASOND'.split('');
+  const totals = months.map((_, c) => HEAT.reduce((s, row) => s + row[c], 0));
+  const max = Math.max(...totals), min = Math.min(...totals);
+  const pts = totals.map((t, c) => [5 + c * 10, 26 - ((t - min) / (max - min)) * 21]);
+  const d = 'M' + pts.map(([x, y]) => `${x} ${y.toFixed(1)}`).join('L');
+  const [lx, ly] = pts[pts.length - 1];
+  return (
+    <div className="pv pv-heat" aria-hidden="true">
+      <svg className="pv-heat-line" viewBox="0 0 120 30">
+        <path className="pv-heat-curve" d={d} pathLength="1" />
+        <circle className="pv-heat-end" cx={lx} cy={ly} r="1.7" />
+      </svg>
+      <div className="pv-heat-grid">
+        {HEAT.map((row, r) => row.map((v, c) => (
+          <span className="pv-heat-cell" key={`${r}-${c}`} style={{ '--v': v.toFixed(2) }}></span>
+        )))}
+        <span className="pv-heat-scan"></span>
+      </div>
+      <div className="pv-heat-axis">{months.map((m, i) => <span key={i}>{m}</span>)}</div>
+    </div>
+  );
+}
+
+function GaugeVisual() {
+  const polar = (r, deg) => {
+    const a = deg * Math.PI / 180;
+    return [(100 + r * Math.cos(a)).toFixed(2), (100 + r * Math.sin(a)).toFixed(2)];
+  };
+  const ticks = Array.from({ length: 28 }, (_, i) => {
+    const deg = 135 + i * 10;
+    const [x1, y1] = polar(i % 3 === 0 ? 80 : 84, deg);
+    const [x2, y2] = polar(90, deg);
+    return { x1, y1, x2, y2, lit: i / 27 <= GAUGE_VALUE };
+  });
+  const angle = -135 + 270 * GAUGE_VALUE;
+  return (
+    <div className="pv pv-gauge" aria-hidden="true">
+      <svg viewBox="0 0 200 200">
+        <circle className="pv-gauge-track" cx="100" cy="100" r="68" pathLength="100" transform="rotate(135 100 100)" />
+        <circle className="pv-gauge-value" cx="100" cy="100" r="68" pathLength="100" transform="rotate(135 100 100)"
+          style={{ strokeDasharray: `${(75 * GAUGE_VALUE).toFixed(1)} 100` }} />
+        <g className="pv-gauge-ticks">
+          {ticks.map((t, i) => <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} />)}
+        </g>
+        <g className="pv-gauge-lit">
+          {ticks.filter(t => t.lit).map((t, i) => <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} />)}
+        </g>
+        <g className="pv-gauge-needle" transform={`rotate(${angle.toFixed(1)} 100 100)`}>
+          <path d="M100 38L103.2 100H96.8Z" />
+        </g>
+        <circle className="pv-gauge-hub" cx="100" cy="100" r="7" />
+      </svg>
+      <div className="pv-odo">
+        {ODOMETER.split('').map((n, i) => (
+          <span className={`pv-odo-digit${i === ODOMETER.length - 1 ? ' pv-odo-digit--live' : ''}`} key={i}>
+            <span className="pv-odo-col" style={{ '--d': n }}>
+              {Array.from({ length: 10 }, (_, k) => <span key={k}>{k}</span>)}
+            </span>
+          </span>
+        ))}
+        <small>km</small>
+      </div>
+      <div className="pv-gauge-label">Parc disponible</div>
+    </div>
+  );
+}
+
+function ProjectVisual({ type }) {
+  if (type === 'heatmap') return <HeatmapVisual />;
+  if (type === 'gauge') return <GaugeVisual />;
   const d = "M 30 250 C 110 250 110 90 200 110 S 300 250 370 60";
   return (
     <div className="pv pv-route" aria-hidden="true">
@@ -662,6 +1083,7 @@ function Projects() {
     <section className="section" id="projects">
       <span className="rule"></span>
       <SectionHead num="03" label="Projets" title="Livré chez Globo Afrique." />
+      <BnspCase />
       <div className="projects-stack">
         {list.map((p, i) => (
           <article className="project-card" key={p.name} style={{ '--i': i }}>
@@ -674,6 +1096,7 @@ function Projects() {
                 <h3 className="project-name">{p.name}</h3>
                 <div className="project-client">{p.client}</div>
                 <p className="project-desc">{p.desc}</p>
+                {p.role && <div className="project-role">{p.role}</div>}
               </div>
               <ul className="project-features">
                 {p.features.map(f => <li key={f}>{f}</li>)}
@@ -740,7 +1163,70 @@ function Education() {
           </article>
         ))}
       </div>
+
+      <CvDrop />
     </section>
+  );
+}
+
+// Le CV sort d'une fente d'imprimante au fil du défilement. Le DOM porte l'état final (feuille sortie) :
+// buildCv pose l'état initial et rejoue l'impression.
+function CvDrop() {
+  const meta = [['Format', 'PDF · A4'], ['Pages', '1'], ['Poids', CV.size], ['Mise à jour', CV.updated]];
+  return (
+    <div className="cvd">
+      <div className="cvd-copy">
+        <div className="cvd-eyebrow">
+          <span className="num" data-scramble>[CV]</span>
+          <span className="sep">·</span>
+          <span data-scramble>Version imprimable</span>
+        </div>
+        <h3 className="cvd-title split-words">Tout le parcours, <em>sur une page.</em></h3>
+        <p className="cvd-lead">
+          Expériences, projets, stack et formation, condensés sur une page A4 : lisible d'un coup d'œil, prête à imprimer ou à transmettre.
+        </p>
+        <dl className="cvd-meta">
+          {meta.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
+        </dl>
+        <a href={CV.href} download={CV.file} className="cvd-btn" data-magnetic="0.2" data-cursor="hide">
+          <span className="cvd-btn-fill"></span>
+          <span className="cvd-btn-ic" aria-hidden="true">
+            <svg viewBox="0 0 44 44" fill="none">
+              <circle className="cvd-ring" cx="22" cy="22" r="20.5" pathLength="1" />
+              <g className="cvd-arrow"><path className="cvd-arrow-loop" d="M22 14V29M16 23.5L22 29.5L28 23.5" /></g>
+              <path className="cvd-check" d="M15.5 22.5L20 27L29 17.5" pathLength="1" />
+            </svg>
+          </span>
+          <span className="cvd-btn-label">
+            <span className="cvd-btn-roll">
+              <span>Télécharger le CV</span>
+              <span aria-hidden="true">Téléchargement…</span>
+              <span aria-hidden="true">Téléchargé</span>
+            </span>
+          </span>
+          <span className="cvd-btn-meta">PDF · {CV.size}</span>
+          <span className="cvd-btn-bar"></span>
+        </a>
+      </div>
+
+      <div className="cvd-stage">
+        <div className="cvd-printer">
+          <div className="cvd-feed">
+            <div className="cvd-tilt">
+              <a href={CV.href} target="_blank" rel="noopener" className="cvd-sheet" data-cursor-label="Voir" aria-label="Ouvrir le CV (PDF) dans un nouvel onglet">
+                <img src={CV.preview} alt="" width="794" height="1123" loading="lazy" decoding="async" />
+                <span className="cvd-scan"></span>
+                <span className="cvd-glare"></span>
+              </a>
+            </div>
+          </div>
+          <div className="cvd-slot" aria-hidden="true">
+            <span className="cvd-slot-label">RE/MS · A4</span>
+            <span className="cvd-led"></span>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
 
@@ -768,6 +1254,7 @@ function Contact() {
       <div className="cta-links">
         <a href={`tel:${PROFILE.phone}`} data-magnetic="0.25">+221 77 866 20 79</a>
         <a href="#" target="_blank" rel="noopener" data-magnetic="0.25">LinkedIn ↗</a>
+        <a href={CV.href} download={CV.file} data-magnetic="0.25">CV · PDF ↓</a>
         <a href="#top" data-magnetic="0.25">Retour haut ↑</a>
       </div>
     </section>
@@ -840,6 +1327,8 @@ function buildIntro(lenis) {
       gsap.set('.intro', { display: 'none' });
       document.documentElement.classList.remove('is-loading');
       lenis && lenis.start();
+      // La barre de défilement réapparaît : la largeur utile change, les épinglages doivent être remesurés.
+      ScrollTrigger.refresh();
     }, 'hero+=0.2');
 
   return tl;
@@ -1074,7 +1563,286 @@ function buildExperience() {
   };
 }
 
+// ---- BNSP : une scène par écran. Chaque fonction pose l'état initial et renvoie une timeline en pause. ----
+function press(tl, el, at) {
+  return tl
+    .to(el, { scale: 0.93, duration: 0.14, ease: 'power2.in' }, at)
+    .to(el, { scale: 1, duration: 0.6, ease: 'elastic.out(1, 0.5)' }, '>');
+}
+
+function sceneCitoyen(el) {
+  const q = gsap.utils.selector(el);
+  gsap.set(q('.cit-type-fill'), { clipPath: 'circle(0% at 22% 50%)' });
+  gsap.set(q('.cit-check'), { scale: 0, autoAlpha: 0 });
+  gsap.set(q('.cit-pin'), { y: -26, autoAlpha: 0 });
+  gsap.set(q('.cit-gps'), { autoAlpha: 0, y: 6 });
+  gsap.set(q('.cit-send'), { autoAlpha: 0.4 });
+  gsap.set(q('.cit-sheet'), { yPercent: 115 });
+
+  const tl = gsap.timeline({ paused: true });
+  press(tl, q('.cit-type--on'), 0.3)
+    .to(q('.cit-type-fill'), { clipPath: 'circle(140% at 22% 50%)', duration: 0.8, ease: 'expo.out' }, 0.42)
+    .to(q('.cit-tile'), { keyframes: [{ scale: 0.94, duration: 0.12 }, { scale: 1, duration: 0.5, ease: 'expo.out' }], stagger: 0.38 }, 1)
+    .to(q('.cit-check'), { scale: 1, autoAlpha: 1, duration: 0.6, ease: 'back.out(2.6)', stagger: 0.38 }, 1.1)
+    .to(q('.cit-pin'), { y: 0, autoAlpha: 1, duration: 0.9, ease: 'bounce.out' }, 2.2)
+    .to(q('.cit-gps'), { autoAlpha: 1, y: 0, duration: 0.6, ease: 'expo.out' }, 2.6)
+    .to(q('.cit-send'), { autoAlpha: 1, duration: 0.4 }, 2.8);
+  press(tl, q('.cit-send'), 3.25)
+    .to(q('.cit-sheet'), { yPercent: 0, duration: 1, ease: 'expo.out' }, 3.5)
+    .from(q('.cit-sheet-ic'), { scale: 0, rotate: -120, duration: 0.9, ease: 'back.out(2)' }, 3.75);
+  return tl;
+}
+
+function sceneAdmin(el) {
+  const q = gsap.utils.selector(el);
+  const nWait = q('.adm-n-wait')[0];
+  const nRun = q('.adm-n-run')[0];
+  const count = { wait: 0, run: 2 };
+  const render = () => {
+    nWait.textContent = Math.round(count.wait);
+    nRun.textContent = Math.round(count.run);
+  };
+  render();
+  gsap.set(q('.adm-incident'), { scale: 0, autoAlpha: 0, transformOrigin: '50% 50%' });
+  gsap.set(q('.adm-badge'), { scale: 0 });
+  gsap.set(q('.adm-pop'), { autoAlpha: 0, y: 14, scale: 0.97 });
+  gsap.set(q('.adm-row-hl'), { scaleX: 0 });
+  gsap.set(q('.adm-link'), { strokeDashoffset: 1 });
+  gsap.set(q('.adm-toast'), { autoAlpha: 0, y: 10 });
+
+  const tl = gsap.timeline({ paused: true })
+    .to(q('.adm-incident'), { scale: 1, autoAlpha: 1, duration: 0.8, ease: 'back.out(3)' }, 0.3)
+    .to(q('.adm-badge'), { scale: 1, duration: 0.6, ease: 'back.out(3)' }, 0.45)
+    .to(count, { wait: 1, duration: 0.3, onUpdate: render }, 0.5)
+    .fromTo(q('.adm-kpi--wait'), { '--flash': 0 }, { '--flash': 1, duration: 0.25, yoyo: true, repeat: 1 }, 0.5)
+    .to(q('.adm-pop'), { autoAlpha: 1, y: 0, scale: 1, duration: 0.7, ease: 'expo.out' }, 1.2)
+    .to(q('.adm-row-hl'), { scaleX: 1, duration: 0.6, ease: 'expo.out' }, 1.75);
+  press(tl, q('.adm-assign'), 2.3)
+    .to(q('.adm-pop'), { autoAlpha: 0, y: 10, scale: 0.97, duration: 0.45, ease: 'power2.in' }, 2.6)
+    .to(q('.adm-link'), { strokeDashoffset: 0, duration: 1.1, ease: 'expo.inOut' }, 2.8)
+    .to(q('.adm-team--alpha'), { scale: 1.8, transformOrigin: '50% 50%', duration: 0.3, yoyo: true, repeat: 1 }, 2.8)
+    .to(count, { wait: 0, run: 3, duration: 0.3, onUpdate: render }, 3.3)
+    .to(q('.adm-toast'), { autoAlpha: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 3.4);
+  return tl;
+}
+
+function scenePompier(el) {
+  const q = gsap.utils.selector(el);
+  gsap.set(q('.pmp-push'), { yPercent: -160, autoAlpha: 0 });
+  gsap.set(q('.pmp-empty'), { autoAlpha: 1 });
+  gsap.set(q('.pmp-card'), { yPercent: 120, autoAlpha: 0 });
+  gsap.set(q('.pmp-map'), { autoAlpha: 0 });
+  gsap.set(q('.pmp-state'), { autoAlpha: 0, x: 8 });
+  gsap.set(q('.pmp-target'), { y: -22, autoAlpha: 0 });
+  gsap.set(q('.pmp-route'), { strokeDashoffset: 1 });
+  gsap.set(q('.pmp-chip'), { autoAlpha: 0, scale: 0.8 });
+  gsap.set(q('.pmp-btn'), { autoAlpha: 0, y: 12 });
+
+  const tl = gsap.timeline({ paused: true })
+    .to(q('.pmp-push'), { yPercent: 0, autoAlpha: 1, duration: 0.8, ease: 'expo.out' }, 0.3)
+    // Le téléphone vibre à la réception de la notification.
+    .to(el, { keyframes: { x: [0, -3, 3, -2, 2, 0] }, duration: 0.45, ease: 'none' }, 0.35)
+    .to(q('.pmp-push'), { yPercent: -160, autoAlpha: 0, duration: 0.6, ease: 'power3.in' }, 1.6)
+    .to(q('.pmp-empty'), { autoAlpha: 0, duration: 0.3 }, 1.7)
+    .to(q('.pmp-card'), { yPercent: 0, autoAlpha: 1, duration: 0.9, ease: 'expo.out' }, 1.8);
+  press(tl, q('.pmp-take'), 2.7)
+    .to(q('.pmp-card'), { yPercent: 120, autoAlpha: 0, duration: 0.6, ease: 'power3.in' }, 3)
+    .to(q('.pmp-map'), { autoAlpha: 1, duration: 0.6 }, 3.1)
+    .to(q('.pmp-state'), { autoAlpha: 1, x: 0, duration: 0.6, ease: 'expo.out' }, 3.2)
+    .to(q('.pmp-target'), { y: 0, autoAlpha: 1, duration: 0.9, ease: 'bounce.out' }, 3.3)
+    .to(q('.pmp-route'), { strokeDashoffset: 0, duration: 1.4, ease: 'expo.inOut' }, 3.5)
+    .to(q('.pmp-btn'), { autoAlpha: 1, y: 0, duration: 0.7, stagger: 0.08, ease: 'expo.out' }, 4.2)
+    .to(q('.pmp-chip'), { autoAlpha: 1, scale: 1, duration: 0.6, ease: 'back.out(2.5)' }, 4.4);
+  return tl;
+}
+
+const SCENES = { citoyen: sceneCitoyen, admin: sceneAdmin, pompier: scenePompier };
+
+function sceneFor(panel) {
+  return SCENES[panel.dataset.scene](panel.querySelector('.phone, .browser'));
+}
+
+function buildBnsp() {
+  const root = document.querySelector('.bnsp');
+  if (!root) return;
+  const panels = gsap.utils.toArray('.bnsp-panel', root);
+  const outro = root.querySelectorAll('.bnsp-outro > *');
+
+  SplitText.create(root.querySelector('.bnsp-intro-title'), {
+    type: 'words',
+    mask: 'words',
+    wordsClass: 'split-word',
+    autoSplit: true,
+    onSplit: (self) => gsap.from(self.words, {
+      yPercent: 110,
+      rotate: 4,
+      duration: 1.2,
+      stagger: 0.05,
+      ease: 'expo.out',
+      scrollTrigger: { trigger: root, start: 'top 75%' },
+    }),
+  });
+  gsap.from(root.querySelectorAll('.bnsp-head > *, .bnsp-intro .bnsp-lead, .bnsp-hint'), {
+    autoAlpha: 0,
+    y: 20,
+    duration: 1,
+    stagger: 0.08,
+    ease: 'expo.out',
+    scrollTrigger: { trigger: root, start: 'top 75%' },
+  });
+
+  const mm = gsap.matchMedia();
+
+  // Desktop : la section s'épingle et le récit défile à l'horizontale. Un rail suit l'incident.
+  mm.add('(min-width: 901px)', () => {
+    root.classList.add('is-rail');
+    const pin = root.querySelector('.bnsp-pin');
+    const track = root.querySelector('.bnsp-track');
+    const nodes = gsap.utils.toArray('.bnsp-node', root);
+    const setFill = gsap.quickSetter(root.querySelector('.bnsp-rail-fill'), 'scaleX');
+    const setPacket = gsap.quickSetter(root.querySelector('.bnsp-packet-track'), 'xPercent');
+    const distance = () => track.scrollWidth - pin.clientWidth;
+    let stops = [];
+
+    // Position de chaque étape sur le rail = progression à laquelle son panneau passe au centre.
+    const measure = () => {
+      const d = distance();
+      stops = panels.map(p => gsap.utils.clamp(0, 1, (p.offsetLeft + p.offsetWidth / 2 - pin.clientWidth / 2) / d));
+      nodes.forEach((n, i) => { n.style.left = `${stops[i] * 100}%`; });
+    };
+    const syncRail = () => {
+      const p = scroll.progress();
+      setFill(p);
+      setPacket(p * 100);
+      let current = -1;
+      stops.forEach((s, i) => { if (p >= s - 0.01) current = i; });
+      nodes.forEach((n, i) => {
+        n.classList.toggle('is-past', i <= current);
+        n.classList.toggle('is-current', i === current);
+      });
+    };
+
+    const scroll = gsap.to(track, { x: () => -distance(), ease: 'none', onUpdate: syncRail });
+    ScrollTrigger.create({
+      trigger: pin,
+      start: 'top top',
+      end: () => `+=${distance()}`,
+      pin: true,
+      scrub: 1,
+      animation: scroll,
+      anticipatePin: 1,
+      invalidateOnRefresh: true,
+      // Épinglée après la création des déclencheurs de sections plus bas : elle doit être mesurée en premier.
+      refreshPriority: 1,
+      onRefresh: () => { measure(); syncRail(); },
+    });
+
+    panels.forEach(panel => {
+      gsap.fromTo(panel.querySelector('.bnsp-device'), { x: 90 }, {
+        x: -90,
+        ease: 'none',
+        scrollTrigger: { trigger: panel, containerAnimation: scroll, start: 'left right', end: 'right left', scrub: true },
+      });
+      gsap.from(panel.querySelectorAll('.bnsp-copy > *'), {
+        autoAlpha: 0,
+        y: 26,
+        duration: 1,
+        stagger: 0.07,
+        ease: 'expo.out',
+        scrollTrigger: { trigger: panel, containerAnimation: scroll, start: 'left 72%', toggleActions: 'play none none reverse' },
+      });
+      ScrollTrigger.create({
+        trigger: panel,
+        containerAnimation: scroll,
+        start: 'left 55%',
+        animation: sceneFor(panel),
+        toggleActions: 'play none none reverse',
+      });
+    });
+    gsap.from(outro, {
+      autoAlpha: 0,
+      y: 30,
+      duration: 1.1,
+      stagger: 0.1,
+      ease: 'expo.out',
+      scrollTrigger: { trigger: root.querySelector('.bnsp-outro'), containerAnimation: scroll, start: 'left 75%' },
+    });
+
+    return () => {
+      root.classList.remove('is-rail');
+      nodes.forEach(n => n.classList.remove('is-past', 'is-current'));
+    };
+  });
+
+  // Mobile : récit vertical, chaque écran joue sa scène en entrant dans la vue.
+  mm.add('(max-width: 900px)', () => {
+    panels.forEach(panel => {
+      gsap.from(panel.querySelectorAll('.bnsp-copy > *'), {
+        autoAlpha: 0,
+        y: 26,
+        duration: 1,
+        stagger: 0.07,
+        ease: 'expo.out',
+        scrollTrigger: { trigger: panel, start: 'top 80%' },
+      });
+      ScrollTrigger.create({
+        trigger: panel.querySelector('.bnsp-device'),
+        start: 'top 75%',
+        animation: sceneFor(panel),
+        toggleActions: 'play none none reverse',
+      });
+    });
+    gsap.from(outro, {
+      autoAlpha: 0,
+      y: 30,
+      duration: 1.1,
+      stagger: 0.1,
+      ease: 'expo.out',
+      scrollTrigger: { trigger: root.querySelector('.bnsp-outro'), start: 'top 85%' },
+    });
+  });
+
+  return () => mm.revert();
+}
+
+// Visuels du deck : chaque instrument s'anime quand sa carte arrive.
+function buildVisual(card) {
+  const heat = card.querySelector('.pv-heat');
+  if (heat) {
+    gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 70%' } })
+      .from(heat.querySelectorAll('.pv-heat-cell'), {
+        scale: 0,
+        autoAlpha: 0,
+        duration: 0.9,
+        ease: 'expo.out',
+        stagger: { grid: [HEAT_ROWS, HEAT_COLS], from: 'start', amount: 1.1 },
+      }, 0.3)
+      .from(heat.querySelectorAll('.pv-heat-axis span'), { autoAlpha: 0, y: 6, duration: 0.6, stagger: 0.03, ease: 'expo.out' }, 0.6)
+      .from(heat.querySelector('.pv-heat-curve'), { strokeDashoffset: 1, duration: 1.8, ease: 'expo.inOut' }, 0.5)
+      .from(heat.querySelector('.pv-heat-end'), { scale: 0, transformOrigin: '50% 50%', duration: 0.6, ease: 'back.out(3)' }, 2.1);
+  }
+
+  const gauge = card.querySelector('.pv-gauge');
+  if (gauge) {
+    const needle = gauge.querySelector('.pv-gauge-needle');
+    const angle = -135 + 270 * GAUGE_VALUE;
+    const tl = gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 70%' } })
+      .fromTo(needle, { rotation: -135, svgOrigin: '100 100' }, { rotation: angle, svgOrigin: '100 100', duration: 2.4, ease: 'elastic.out(1, 0.4)' }, 0.4)
+      .fromTo(gauge.querySelector('.pv-gauge-value'), { strokeDasharray: '0 100' }, { strokeDasharray: `${(75 * GAUGE_VALUE).toFixed(1)} 100`, duration: 1.6, ease: 'expo.out' }, 0.4)
+      .from(gauge.querySelectorAll('.pv-gauge-lit line'), { autoAlpha: 0, duration: 0.3, stagger: 0.045, ease: 'none' }, 0.4)
+      .from(gauge.querySelectorAll('.pv-odo, .pv-gauge-label'), { autoAlpha: 0, y: 10, duration: 0.8, stagger: 0.1, ease: 'expo.out' }, 0.6);
+    // Le compteur déroule ses chiffres jusqu'au kilométrage ; le dernier chiffre tourne en continu (CSS).
+    gauge.querySelectorAll('.pv-odo-digit:not(.pv-odo-digit--live) .pv-odo-col').forEach((col, i) => {
+      tl.fromTo(col, { '--d': 0 }, { '--d': Number(col.style.getPropertyValue('--d')), duration: 1.8, ease: 'expo.out' }, 0.7 + i * 0.08);
+    });
+    // Au repos, l'aiguille respire légèrement autour de sa valeur.
+    tl.to(needle, { rotation: angle - 2, svgOrigin: '100 100', duration: 1.8, ease: 'sine.inOut', repeat: -1, yoyo: true });
+  }
+}
+
 function buildProjects() {
+  // L'étude de cas précède le deck dans la page : ses déclencheurs sont créés en premier.
+  const cleanupBnsp = buildBnsp();
   const cards = gsap.utils.toArray('.project-card');
   const stacked = window.matchMedia('(min-width: 901px)').matches;
 
@@ -1093,15 +1861,17 @@ function buildProjects() {
       }),
     });
     gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 75%' } })
-      .from(card.querySelectorAll('.project-meta, .project-client, .project-desc'), { autoAlpha: 0, y: 24, duration: 1, stagger: 0.08, ease: 'expo.out' }, 0.2)
+      .from(card.querySelectorAll('.project-meta, .project-client, .project-desc, .project-role'), { autoAlpha: 0, y: 24, duration: 1, stagger: 0.08, ease: 'expo.out' }, 0.2)
       .from(card.querySelectorAll('.project-features li'), { autoAlpha: 0, x: -20, duration: 0.8, stagger: 0.06, ease: 'expo.out' }, 0.4)
       .from(card.querySelectorAll('.project-stack .xp-pill, .project-modules span'), { autoAlpha: 0, scale: 0.6, duration: 0.6, stagger: 0.04, ease: 'back.out(2)' }, 0.5)
       .from(card.querySelector('.pv'), { autoAlpha: 0, scale: 0.85, duration: 1.4, ease: 'expo.out' }, 0.2);
+    buildVisual(card);
 
     // Stacked deck: each card recedes as the next one slides over it.
     const next = cards[i + 1];
     if (stacked && next) {
-      gsap.to(card, {
+      // Départ explicite : depuis `filter: none`, GSAP partirait de brightness(0) et noircirait la carte d'un coup.
+      gsap.fromTo(card, { scale: 1, filter: 'brightness(1)' }, {
         scale: 0.9,
         filter: 'brightness(0.45)',
         ease: 'none',
@@ -1109,6 +1879,8 @@ function buildProjects() {
       });
     }
   });
+
+  return cleanupBnsp;
 }
 
 function buildMarquee() {
@@ -1179,6 +1951,102 @@ function buildEducation() {
     return () => item.removeEventListener('mousemove', move);
   });
   return () => handlers.forEach(fn => fn());
+}
+
+function buildCv() {
+  const root = document.querySelector('.cvd');
+  if (!root) return;
+  const q = gsap.utils.selector(root);
+  const printer = q('.cvd-printer')[0];
+  const sheet = q('.cvd-sheet')[0];
+  const btn = q('.cvd-btn')[0];
+
+  gsap.from(q('.cvd-lead, .cvd-meta > div, .cvd-btn'), {
+    autoAlpha: 0,
+    y: 24,
+    duration: 1,
+    stagger: 0.08,
+    ease: 'expo.out',
+    scrollTrigger: { trigger: root, start: 'top 75%' },
+  });
+  gsap.from(q('.cvd-slot'), {
+    autoAlpha: 0,
+    scaleX: 0.7,
+    duration: 1.2,
+    ease: 'expo.out',
+    scrollTrigger: { trigger: printer, start: 'top 90%' },
+  });
+
+  // Impression : la feuille sort de la fente au rythme du défilement ; la tête s'allume pendant la sortie.
+  gsap.fromTo(sheet, { yPercent: 101 }, {
+    yPercent: 0,
+    ease: 'none',
+    scrollTrigger: {
+      trigger: printer,
+      start: 'top 85%',
+      end: 'bottom 72%',
+      scrub: 0.8,
+      onUpdate: (self) => printer.classList.toggle('is-printing', self.progress > 0.01 && self.progress < 0.99),
+    },
+  });
+
+  // Téléchargement : la flèche plonge, l'anneau et la barre se remplissent, la feuille est scannée puis saute
+  // hors de la fente. Le lien n'est jamais bloqué : le navigateur télécharge pendant que la scène joue.
+  const roll = q('.cvd-btn-roll')[0];
+  let busy = false;
+  const onClick = () => {
+    if (busy) return;
+    busy = true;
+    btn.classList.add('is-busy');
+    const tl = gsap.timeline({ onComplete: () => { busy = false; btn.classList.remove('is-busy'); } });
+    tl.to(btn, { scale: 0.95, duration: 0.12, ease: 'power2.in' }, 0)
+      .to(btn, { scale: 1, duration: 0.8, ease: 'elastic.out(1, 0.45)' }, 0.12)
+      .to(q('.cvd-arrow'), { y: 26, duration: 0.35, ease: 'power3.in' }, 0)
+      .to(roll, { yPercent: -100 / 3, duration: 0.6, ease: 'expo.out' }, 0.1)
+      .fromTo(q('.cvd-ring'), { strokeDashoffset: 1, autoAlpha: 1 }, { strokeDashoffset: 0, duration: 1, ease: 'power2.inOut' }, 0.15)
+      .fromTo(q('.cvd-btn-bar'), { scaleX: 0, transformOrigin: 'left center' }, { scaleX: 1, duration: 1, ease: 'power2.inOut' }, 0.15)
+      .fromTo(q('.cvd-scan'), { yPercent: -100, autoAlpha: 1 }, { yPercent: 560, duration: 1, ease: 'power2.inOut' }, 0.15)
+      .to(q('.cvd-scan'), { autoAlpha: 0, duration: 0.25 }, 0.95)
+      .to(sheet, { y: -18, duration: 0.3, ease: 'power3.out' }, 1)
+      .to(sheet, { y: 0, duration: 0.9, ease: 'bounce.out' }, 1.3)
+      .addLabel('done', 1.15)
+      .to(roll, { yPercent: -200 / 3, duration: 0.6, ease: 'expo.out' }, 'done')
+      .to(q('.cvd-check'), { strokeDashoffset: 0, duration: 0.55, ease: 'expo.out' }, 'done')
+      .addLabel('reset', 'done+=1.7')
+      .to(q('.cvd-check'), { strokeDashoffset: -1, duration: 0.4, ease: 'power2.in' }, 'reset')
+      .to(q('.cvd-ring'), { autoAlpha: 0, duration: 0.4 }, 'reset')
+      .to(q('.cvd-btn-bar'), { scaleX: 0, transformOrigin: 'right center', duration: 0.6, ease: 'expo.inOut' }, 'reset')
+      .to(roll, { yPercent: 0, duration: 0.7, ease: 'expo.out' }, 'reset+=0.1')
+      .fromTo(q('.cvd-arrow'), { y: -26 }, { y: 0, duration: 0.7, ease: 'expo.out', immediateRender: false }, 'reset+=0.2')
+      .set(q('.cvd-check'), { strokeDashoffset: 1 });
+  };
+  btn.addEventListener('click', onClick);
+
+  if (!FINE) return () => btn.removeEventListener('click', onClick);
+
+  // La feuille, tenue par la fente, se penche vers le pointeur ; un reflet suit la souris.
+  const stage = q('.cvd-stage')[0];
+  const tilt = q('.cvd-tilt')[0];
+  gsap.set(tilt, { transformPerspective: 1100, transformOrigin: '50% 100%' });
+  const rx = gsap.quickTo(tilt, 'rotationX', { duration: 0.9, ease: 'power3' });
+  const ry = gsap.quickTo(tilt, 'rotationY', { duration: 0.9, ease: 'power3' });
+  const move = (e) => {
+    const r = sheet.getBoundingClientRect();
+    const nx = gsap.utils.clamp(0, 1, (e.clientX - r.left) / r.width);
+    const ny = gsap.utils.clamp(0, 1, (e.clientY - r.top) / r.height);
+    ry((nx - 0.5) * 16);
+    rx((0.5 - ny) * 12);
+    sheet.style.setProperty('--gx', `${(nx * 100).toFixed(1)}%`);
+    sheet.style.setProperty('--gy', `${(ny * 100).toFixed(1)}%`);
+  };
+  const leave = () => { rx(0); ry(0); };
+  stage.addEventListener('mousemove', move);
+  stage.addEventListener('mouseleave', leave);
+  return () => {
+    btn.removeEventListener('click', onClick);
+    stage.removeEventListener('mousemove', move);
+    stage.removeEventListener('mouseleave', leave);
+  };
 }
 
 function buildContact() {
@@ -1287,7 +2155,7 @@ function App() {
       ctx.add(() => {
         buildIntro(lenis);
         buildNav(lenis);
-        [buildHero, buildSections, buildExperience, buildProjects, buildMarquee, buildSkills, buildEducation, buildContact, buildMagnetic]
+        [buildHero, buildSections, buildExperience, buildProjects, buildMarquee, buildSkills, buildEducation, buildCv, buildContact, buildMagnetic]
           .forEach(fn => { const c = fn(); if (c) cleanups.push(c); });
       });
       ScrollTrigger.refresh();

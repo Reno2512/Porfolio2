@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>CV — Robert Emmanuel Mamadou Sagne · Développeur Fullstack</title>
+<meta name="author" content="Robert Emmanuel Mamadou Sagne" />
+<meta name="description" content="CV de Robert Emmanuel Mamadou Sagne, développeur fullstack à Dakar : Angular, Spring Boot, Laravel, Node.js." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Space+Grotesk:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=block" rel="stylesheet" />
+<!--
+  Source du CV. Le PDF et la vignette du portfolio en sont générés : node cv/build.mjs
+  Une seule page A4 : build.mjs refuse de produire le PDF si le contenu déborde.
+-->
+<style>
+@page { size: A4; margin: 0; }
+
+:root {
+  --paper: #fbf8f2;
+  --tint: #f3eee4;
+  --ink: #1a1611;
+  --ink-2: #463e34;
+  --mute: #847a6d;
+  --line: #e2dacb;
+  --accent: #f2cd3a;      /* jaune du portfolio */
+  --accent-ink: #a4701c;  /* le même, lisible sur papier */
+  --on-ink: #fbf8f2;
+  --on-ink-dim: #cfc6b7;
+  --on-ink-mute: #958b7d;
+  --on-ink-line: rgb(251 248 242 / 0.14);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { background: var(--paper); }
+body {
+  font: 400 8.1pt/1.44 'Space Grotesk', system-ui, sans-serif;
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+  -webkit-print-color-adjust: exact;
+  print-color-adjust: exact;
+}
+a { color: inherit; text-decoration: none; }
+ul { list-style: none; }
+
+.page {
+  width: 210mm;
+  height: 297mm;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+.mono {
+  font-family: 'JetBrains Mono', monospace;
+  text-transform: uppercase;
+  letter-spacing: 0.14em;
+}
+
+/* ============== EN-TÊTE ============== */
+.head {
+  background: var(--ink);
+  color: var(--on-ink);
+  padding: 7.5mm 13mm 0;
+}
+.head-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 3.6mm;
+  border-bottom: 0.25mm solid var(--on-ink-line);
+  white-space: nowrap;
+  font-size: 6.4pt;
+  color: var(--on-ink-mute);
+}
+.mark { display: flex; align-items: center; gap: 2.2mm; color: var(--on-ink); font-weight: 500; }
+.mark i { width: 1.9mm; height: 1.9mm; border-radius: 50%; background: var(--accent); }
+.mark em { font-style: normal; color: var(--on-ink-mute); font-weight: 400; }
+/* Libellés et valeurs restent séparés par de vrais espaces : les ATS lisent le texte du PDF, pas la mise en page. */
+.contact {
+  display: flex;
+  gap: 4.5mm;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 6.8pt;
+  letter-spacing: 0.02em;
+  color: var(--on-ink-dim);
+}
+.contact i {
+  font-style: normal;
+  font-size: 5.6pt;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+
+.head-main {
+  display: grid;
+  grid-template-columns: 1fr 86mm;
+  gap: 10mm;
+  align-items: end;
+  padding: 5.5mm 0 5mm;
+}
+.name {
+  font: 400 34pt/0.9 'Instrument Serif', serif;
+  letter-spacing: -0.02em;
+}
+.name > span { display: block; }
+.name em { color: var(--accent); }
+.role {
+  margin-top: 3.6mm;
+  display: flex;
+  align-items: center;
+  gap: 2.6mm;
+  font-size: 10.2pt;
+  font-weight: 500;
+}
+.role::before { content: ''; width: 7mm; height: 0.3mm; background: var(--accent); }
+.role-stack { margin: 1.3mm 0 0 9.6mm; font-size: 6.2pt; color: var(--on-ink-mute); }
+
+.pitch {
+  font-size: 7.9pt;
+  line-height: 1.52;
+  color: var(--on-ink-dim);
+}
+.pitch strong { color: var(--on-ink); font-weight: 500; }
+.pitch .label { display: block; margin-bottom: 1.8mm; font-size: 6.2pt; color: var(--accent); }
+
+.figures {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  border-top: 0.25mm solid var(--on-ink-line);
+}
+.figures > div {
+  display: flex;
+  align-items: center;
+  gap: 3mm;
+  padding: 2.6mm 0 3mm;
+}
+.figures > div + div { padding-left: 5mm; border-left: 0.25mm solid var(--on-ink-line); }
+.figures b {
+  font: 400 19pt/1 'Instrument Serif', serif;
+  color: var(--accent);
+}
+.figures span {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 5.9pt;
+  line-height: 1.4;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--on-ink-dim);
+}
+
+/* ============== CORPS ============== */
+.body {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 1fr 64mm;
+  min-height: 0;
+}
+.main { padding: 6mm 8mm 6mm 13mm; overflow: hidden; }
+.side { background: var(--tint); padding: 6mm 12mm 6mm 6.5mm; overflow: hidden; }
+
+.h {
+  display: flex;
+  align-items: center;
+  gap: 2.4mm;
+  margin-bottom: 3.4mm;
+  font-size: 6.4pt;
+  font-weight: 500;
+  color: var(--mute);
+}
+.h b { color: var(--accent-ink); font-weight: 500; }
+.h::after { content: ''; flex: 1; height: 0.25mm; background: var(--line); }
+
+/* ---- Expériences ---- */
+.job + .job { margin-top: 3.4mm; padding-top: 3mm; border-top: 0.25mm solid var(--line); }
+.job-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 4mm;
+}
+.job-head h3 { font-size: 9.8pt; font-weight: 600; letter-spacing: -0.01em; }
+.job-head h3 span { font-weight: 400; color: var(--mute); }
+.when {
+  flex: none;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 6.6pt;
+  letter-spacing: 0.06em;
+  color: var(--ink-2);
+}
+.job-role { margin-top: 0.6mm; color: var(--ink-2); }
+.job-role b { font-weight: 500; color: var(--ink); }
+
+.proj {
+  margin-top: 2.5mm;
+  padding-left: 3.4mm;
+  border-left: 0.3mm solid var(--line);
+}
+.proj-head {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 3mm;
+  margin-bottom: 1mm;
+}
+.proj-head h4 {
+  font: 400 12.4pt/1.05 'Instrument Serif', serif;
+  letter-spacing: -0.005em;
+}
+.proj-head .mono { flex: none; font-size: 5.9pt; color: var(--mute); letter-spacing: 0.1em; }
+
+/* Pas de position: relative ici : Chrome peint les éléments positionnés à part et les écrit
+   en fin de flux PDF, ce qui déplacerait les puces après la colonne latérale pour un ATS. */
+.pts li { padding-left: 3mm; }
+.pts li + li { margin-top: 0.55mm; }
+.pts li::before {
+  content: '';
+  display: inline-block;
+  width: 1.2mm;
+  height: 0.3mm;
+  margin: 0 1.8mm 0 -3mm;
+  vertical-align: 0.3em;
+  background: var(--accent-ink);
+}
+.pts strong { font-weight: 600; }
+
+.tags {
+  margin-top: 1.6mm;
+  margin-bottom: -1mm;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 5.9pt;
+  line-height: 1;
+}
+.tags span {
+  display: inline-block;
+  margin-bottom: 1mm;
+  padding: 0.75mm 1.7mm 0.85mm;
+  border: 0.22mm solid var(--line);
+  border-radius: 5mm;
+  color: var(--ink-2);
+  background: #fff9ec;
+}
+
+.sub { display: grid; grid-template-columns: 24mm 1fr; gap: 2mm; margin-top: 1.6mm; }
+.sub .when { padding-top: 0.45mm; font-size: 6.2pt; letter-spacing: 0.02em; white-space: nowrap; color: var(--mute); }
+.sub b { font-weight: 500; }
+
+/* ---- Colonne latérale ---- */
+.side section + section { margin-top: 4.4mm; }
+.skills > div + div { margin-top: 2.5mm; }
+.skills dt { font-size: 5.9pt; color: var(--accent-ink); margin-bottom: 0.7mm; }
+.skills dd { font-size: 7.6pt; line-height: 1.5; color: var(--ink-2); }
+.skills dd strong { color: var(--ink); font-weight: 600; }
+
+.sectors { font-size: 7.5pt; line-height: 1.5; color: var(--ink-2); }
+
+.edu li + li { margin-top: 2.2mm; }
+.edu .mono { display: block; font-size: 5.9pt; color: var(--accent-ink); margin-bottom: 0.5mm; }
+.edu b { display: block; font-weight: 500; font-size: 7.9pt; line-height: 1.35; }
+.edu small { display: block; font-size: 7.1pt; color: var(--mute); margin-top: 0.3mm; }
+
+.cert {
+  padding: 3mm 3.2mm 3.2mm;
+  background:
+    radial-gradient(circle at 100% 0, transparent 8.7mm, rgb(242 205 58 / 0.5) 8.8mm 9.05mm, transparent 9.15mm),
+    var(--ink);
+  color: var(--on-ink);
+  border-radius: 1.4mm;
+}
+.cert .mono { display: block; font-size: 5.6pt; color: var(--accent); margin-bottom: 1.2mm; }
+.cert b { display: block; font: 400 13pt/1 'Instrument Serif', serif; }
+.cert small { display: block; margin-top: 1mm; font-size: 6.9pt; color: var(--on-ink-mute); }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <header class="head">
+    <div class="head-top">
+      <div class="mark mono"><i></i><span>RE/MS <em>· Curriculum vitae 2026</em></span></div>
+      <div class="contact">
+        <a href="mailto:sagneemma25@gmail.com"><i>E-mail</i> sagneemma25@gmail.com</a>
+        <a href="tel:+221778662079"><i>Tél.</i> +221 77 866 20 79</a>
+        <span><i>Lieu</i> Rufisque · Dakar, Sénégal</span>
+      </div>
+    </div>
+
+    <div class="head-main">
+      <div>
+        <h1 class="name"><span>Robert <em>Emmanuel</em></span> <span>Mamadou Sagne</span></h1>
+        <div class="role">Développeur Fullstack</div>
+        <div class="role-stack mono">Angular · Spring Boot · Laravel · Node.js</div>
+      </div>
+      <p class="pitch">
+        <span class="label mono">Profil</span>
+        Ingénieur diplômé de l'<strong>École Supérieure Polytechnique de Dakar</strong>. Je conçois des applications métiers de bout en bout — interfaces, API, bases de données — pour des institutions publiques et des groupes privés. En deux ans chez Globo Afrique&#8239;: <strong>six applications livrées</strong>, dont la chaîne d'alerte des Sapeurs-Pompiers, et un CDD à l'issue du stage. Certifié <strong>CompTIA Security+</strong>.
+      </p>
+    </div>
+
+    <div class="figures">
+      <div><b>06</b><span>Applications métiers<br />livrées en 2 ans</span></div>
+      <div><b>03</b><span>Grands comptes · BNSP,<br />Groupe Kirène, Petrosen</span></div>
+      <div><b>05</b><span>Secteurs d'activité,<br />du public au privé</span></div>
+    </div>
+  </header>
+
+  <div class="body">
+    <main class="main">
+      <h2 class="h mono"><b>01</b>Expérience professionnelle</h2>
+
+      <article class="job">
+        <div class="job-head">
+          <h3>Globo Afrique <span>· Dakar</span></h3>
+          <span class="when">Oct. 2024 – aujourd'hui</span>
+        </div>
+        <div class="job-role"><b>Développeur Fullstack</b> — stage (oct. 2024 – sept. 2026), puis CDD dès octobre 2026</div>
+
+        <div class="proj">
+          <div class="proj-head">
+            <h4>Chaîne d'alerte BNSP</h4>
+            <span class="mono">Sapeurs-Pompiers · 2025 – 2026</span>
+          </div>
+          <ul class="pts">
+            <li>Conçu et développé les <strong>trois applications</strong> de la chaîne d'intervention — PWA citoyen, back-office, PWA pompiers — reliées à une même API REST.</li>
+            <li>Signalement sans compte&#8239;: photo, vidéo et audio capturés dans le navigateur, GPS automatique, suivi et notifications push.</li>
+            <li>Back-office cartographique&#8239;: affectation des équipes par région et par type d'intervention, rôles et permissions, journal d'activité.</li>
+            <li>Terrain&#8239;: alerte push à l'affectation, prise en charge unique par équipe, itinéraire OSRM.</li>
+          </ul>
+          <div class="tags"><span>Angular 20</span> <span>SSR</span> <span>Signals</span> <span>PWA</span> <span>Web Push</span> <span>Material</span> <span>Leaflet</span> <span>OSRM</span></div>
+        </div>
+
+        <div class="proj">
+          <div class="proj-head">
+            <h4>Mercurio</h4>
+            <span class="mono">Groupe Kirène · SIAGRO · 2025 – 2026</span>
+          </div>
+          <ul class="pts">
+            <li>Conçu le front-end de la plateforme de pilotage de la distribution&#8239;: quatre espaces — Direction, Commercial, Distributeur, Admin.</li>
+            <li>Tableau de bord Direction de <strong>17 analyses</strong> du chiffre d'affaires, dont une heatmap zone × mois (prévu vs réalisé)&#8239;; exports PDF / Excel.</li>
+          </ul>
+          <div class="tags"><span>Angular 21</span> <span>SSR</span> <span>ApexCharts</span> <span>Chart.js</span> <span>GitLab CI</span></div>
+        </div>
+
+        <div class="proj">
+          <div class="proj-head">
+            <h4>Globo Fleet — refonte V2</h4>
+            <span class="mono">Gestion de flotte · 2026</span>
+          </div>
+          <ul class="pts">
+            <li>Mené la refonte de tous les écrans d'un logiciel de flotte multi-structures&#8239;: actifs, missions, maintenances, stocks, achats.</li>
+            <li>Ajouté des check-lists d'inspection paramétrables, signées et exportées en PDF, des rapports de coûts et de disponibilité&#8239;; rédigé le guide utilisateur.</li>
+          </ul>
+          <div class="tags"><span>Laravel</span> <span>PHP</span> <span>Blade</span> <span>MySQL</span> <span>DomPDF</span></div>
+        </div>
+
+        <div class="proj">
+          <div class="proj-head">
+            <h4>PTS — suivi des livraisons</h4>
+            <span class="mono">Petrosen · 2024</span>
+          </div>
+          <ul class="pts">
+            <li>Développé la plateforme de suivi des livraisons de produits pétroliers&#8239;: commandes, transporteurs, chauffeurs, camions à compartiments, incidents.</li>
+          </ul>
+          <div class="tags"><span>Angular</span> <span>Laravel</span> <span>MySQL</span></div>
+        </div>
+      </article>
+
+      <article class="job">
+        <div class="job-head">
+          <h3>DSID <span>· Direction des Systèmes d'Information des Douanes</span></h3>
+          <span class="when">2022 – 2023</span>
+        </div>
+        <div class="sub">
+          <span class="when">Août 2023</span>
+          <p><b>Stagiaire Fullstack.</b> Implémenté une fonctionnalité de traitement de la DPI&#8239;: écrans Angular, services Spring Boot, base IBM DB2.</p>
+        </div>
+        <div class="sub">
+          <span class="when">Août – nov. 2022</span>
+          <p><b>Stagiaire Fullstack.</b> Conçu et livré la plateforme de suivi du matériel de la DSID&#8239;: modélisation UML, API Spring Boot, front-end Angular 14, administration de la base.</p>
+        </div>
+      </article>
+
+      <article class="job">
+        <div class="job-head">
+          <h3>École Supérieure Polytechnique <span>· Dakar</span></h3>
+          <span class="when">2020</span>
+        </div>
+        <div class="sub">
+          <span class="when">Juil. – nov. 2020</span>
+          <p><b>Stagiaire Développeur Web.</b> Conçu et réalisé une application web de location de voitures&#8239;: modélisation UML, PHP / Bootstrap, base MySQL.</p>
+        </div>
+      </article>
+    </main>
+
+    <aside class="side">
+      <section>
+        <h2 class="h mono"><b>02</b>Compétences</h2>
+        <dl class="skills">
+          <div>
+            <dt class="mono">Front-end</dt>
+            <dd><strong>Angular</strong> (14 → 21, Signals, SSR, Material) · TypeScript · JavaScript · React · HTML / CSS · Bootstrap · PWA &amp; Web Push</dd>
+          </div>
+          <div>
+            <dt class="mono">Back-end</dt>
+            <dd><strong>Java · Spring Boot</strong> · <strong>PHP · Laravel</strong> · Node.js · Express · API REST</dd>
+          </div>
+          <div>
+            <dt class="mono">Données</dt>
+            <dd>MySQL · PostgreSQL · IBM DB2 · modélisation UML</dd>
+          </div>
+          <div>
+            <dt class="mono">Cartographie &amp; dataviz</dt>
+            <dd>Leaflet · OSRM · Chart.js · ApexCharts</dd>
+          </div>
+          <div>
+            <dt class="mono">Outils &amp; DevOps</dt>
+            <dd>Git · GitLab CI/CD · Jira · Figma</dd>
+          </div>
+          <div>
+            <dt class="mono">Systèmes &amp; sécurité</dt>
+            <dd>Linux · Windows · macOS · administration système et bases de données · sécurité applicative</dd>
+          </div>
+        </dl>
+      </section>
+
+      <section>
+        <h2 class="h mono"><b>03</b>Secteurs</h2>
+        <p class="sectors">Sécurité civile · Agroalimentaire · Énergie · Logistique &amp; flotte · Douanes</p>
+      </section>
+
+      <section>
+        <h2 class="h mono"><b>04</b>Formation</h2>
+        <ul class="edu">
+          <li>
+            <span class="mono">2020 – 2022</span>
+            <b>Diplôme d'Ingénieur Technologue en Informatique</b>
+            <small>ESP · Dakar</small>
+          </li>
+          <li>
+            <span class="mono">2018 – 2020</span>
+            <b>Diplôme Supérieur de Technologie en Informatique</b>
+            <small>ESP · Dakar</small>
+          </li>
+          <li>
+            <span class="mono">2018</span>
+            <b>Baccalauréat scientifique (S2)</b>
+            <small>Saint Pierre de Grand Dakar</small>
+          </li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="cert">
+          <span class="mono">Certification</span>
+          <b>CompTIA Security+</b>
+          <small>GOMYCODE Dakar · 2024 – 2025</small>
+        </div>
+      </section>
+    </aside>
+  </div>
+
+</div>
+</body>
+</html>
