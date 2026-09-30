@@ -168,7 +168,7 @@ const PROJECTS = [
       "Suivi des livraisons par étapes et statuts",
       "Déclaration d'incidents et documents",
     ],
-    stack: ["Angular", "Laravel", "MySQL"],
+    stack: ["Laravel", "PHP", "Blade", "jQuery", "MySQL"],
     // Pages Blade réelles, alimentées par des données fictives (tools/pts-demo.mjs).
     shotsNote: "Application réelle · données de démonstration",
     shots: [
@@ -234,7 +234,7 @@ const CV = {
   href: "cv/Robert-Emmanuel-Sagne-CV.pdf",
   file: "Robert-Emmanuel-Sagne-CV.pdf",
   preview: "cv/cv-preview.webp",
-  size: "355 Ko",
+  size: "356 Ko",
   updated: "Sept. 2026",
 };
 
