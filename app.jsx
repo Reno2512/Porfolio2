@@ -124,7 +124,13 @@ const PROJECTS = [
       "Alertes stock et visites techniques, guide utilisateur complet",
     ],
     stack: ["Laravel", "PHP", "MySQL", "Blade", "DomPDF"],
-    visual: "gauge",
+    // Captures du guide utilisateur, données sensibles masquées par tools/captures.mjs.
+    shotsNote: "Captures réelles · données sensibles floutées",
+    shots: [
+      { src: "assets/projects/globofleet-operationnel.webp", label: "Tableau de bord · Opérationnel" },
+      { src: "assets/projects/globofleet-financier.webp", label: "Tableau de bord · Financier" },
+      { src: "assets/projects/globofleet-checklists.webp", label: "Check-lists · Équipements et contrôles" },
+    ],
   },
   {
     name: "Mercurio",
@@ -141,7 +147,13 @@ const PROJECTS = [
       "Exports PDF / Excel, rôles, permissions et journal d'activité",
     ],
     stack: ["Angular 21", "SSR", "ApexCharts", "Chart.js", "GitLab CI"],
-    visual: "heatmap",
+    // Le vrai front, alimenté par des données fictives (tools/mercurio-demo.mjs) : aucun chiffre du client.
+    shotsNote: "Application réelle · données de démonstration",
+    shots: [
+      { src: "assets/projects/mercurio-ca.webp", label: "Direction · Chiffre d'affaires" },
+      { src: "assets/projects/mercurio-heatmap.webp", label: "Direction · Heatmap zone × mois" },
+      { src: "assets/projects/mercurio-analyse.webp", label: "Direction · Analyse des ventes" },
+    ],
   },
   {
     name: "PTS",
@@ -157,27 +169,15 @@ const PROJECTS = [
       "Déclaration d'incidents et documents",
     ],
     stack: ["Angular", "Laravel", "MySQL"],
-    visual: "route",
+    // Pages Blade réelles, alimentées par des données fictives (tools/pts-demo.mjs).
+    shotsNote: "Application réelle · données de démonstration",
+    shots: [
+      { src: "assets/projects/pts-dashboard.webp", label: "Tableau de bord · Disponibilités" },
+      { src: "assets/projects/pts-livraisons.webp", label: "Suivi des livraisons" },
+      { src: "assets/projects/pts-suivi.webp", label: "Suivi d'un acheminement · 13 étapes" },
+    ],
   },
 ];
-
-// Heatmap Mercurio : CA illustratif zone × mois (saisonnalité + poids de zone, bruit déterministe).
-const HEAT_ROWS = 7;
-const HEAT_COLS = 12;
-const HEAT = (() => {
-  let seed = 11;
-  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
-  return Array.from({ length: HEAT_ROWS }, (_, r) => Array.from({ length: HEAT_COLS }, (_, c) => {
-    const season = 0.5 + 0.5 * Math.sin(((c - 2) / HEAT_COLS) * Math.PI * 2);
-    const zone = 1 - r / (HEAT_ROWS + 1);
-    // Courbe de puissance : écarte les valeurs pour que la carte ait de vrais creux et de vrais pics.
-    return Math.pow(Math.min(1, 0.1 + season * 0.45 * zone + zone * 0.25 + rnd() * 0.22), 1.9);
-  }));
-})();
-
-// Jauge Globo Fleet : part du parc disponible, et compteur kilométrique.
-const GAUGE_VALUE = 0.86;
-const ODOMETER = "128460";
 
 const SKILLS = {
   "Back-end": [
@@ -984,95 +984,77 @@ function BnspCase() {
 }
 
 // ============== PROJECT VISUALS ==============
-function HeatmapVisual() {
-  const months = 'JFMAMJJASOND'.split('');
-  const totals = months.map((_, c) => HEAT.reduce((s, row) => s + row[c], 0));
-  const max = Math.max(...totals), min = Math.min(...totals);
-  const pts = totals.map((t, c) => [5 + c * 10, 26 - ((t - min) / (max - min)) * 21]);
-  const d = 'M' + pts.map(([x, y]) => `${x} ${y.toFixed(1)}`).join('L');
-  const [lx, ly] = pts[pts.length - 1];
-  return (
-    <div className="pv pv-heat" aria-hidden="true">
-      <svg className="pv-heat-line" viewBox="0 0 120 30">
-        <path className="pv-heat-curve" d={d} pathLength="1" />
-        <circle className="pv-heat-end" cx={lx} cy={ly} r="1.7" />
-      </svg>
-      <div className="pv-heat-grid">
-        {HEAT.map((row, r) => row.map((v, c) => (
-          <span className="pv-heat-cell" key={`${r}-${c}`} style={{ '--v': v.toFixed(2) }}></span>
-        )))}
-        <span className="pv-heat-scan"></span>
-      </div>
-      <div className="pv-heat-axis">{months.map((m, i) => <span key={i}>{m}</span>)}</div>
-    </div>
-  );
-}
+// Captures réelles empilées : l'écran de devant défile seul, glisse derrière la pile, le suivant avance.
+// La barre de progression active pilote le rythme : son animationend passe à l'écran suivant, donc mettre
+// l'animation CSS en pause (survol, carte hors de l'écran) met le défilement en pause.
+function ScreenDeck({ name, shots, note }) {
+  const [current, setCurrent] = useState(0);
+  const [leaving, setLeaving] = useState(-1);
+  const [hover, setHover] = useState(false);
+  const [visible, setVisible] = useState(false);
+  const ref = useRef(null);
+  const n = shots.length;
 
-function GaugeVisual() {
-  const polar = (r, deg) => {
-    const a = deg * Math.PI / 180;
-    return [(100 + r * Math.cos(a)).toFixed(2), (100 + r * Math.sin(a)).toFixed(2)];
+  useEffect(() => {
+    const io = new IntersectionObserver(([e]) => setVisible(e.isIntersecting), { threshold: 0.4 });
+    io.observe(ref.current);
+    return () => io.disconnect();
+  }, []);
+
+  const show = (next) => {
+    if (next === current) return;
+    // L'écran de devant qui part au fond de la pile joue sa sortie ; les autres glissent simplement.
+    setLeaving((current - next + n) % n === n - 1 ? current : -1);
+    setCurrent(next);
   };
-  const ticks = Array.from({ length: 28 }, (_, i) => {
-    const deg = 135 + i * 10;
-    const [x1, y1] = polar(i % 3 === 0 ? 80 : 84, deg);
-    const [x2, y2] = polar(90, deg);
-    return { x1, y1, x2, y2, lit: i / 27 <= GAUGE_VALUE };
-  });
-  const angle = -135 + 270 * GAUGE_VALUE;
-  return (
-    <div className="pv pv-gauge" aria-hidden="true">
-      <svg viewBox="0 0 200 200">
-        <circle className="pv-gauge-track" cx="100" cy="100" r="68" pathLength="100" transform="rotate(135 100 100)" />
-        <circle className="pv-gauge-value" cx="100" cy="100" r="68" pathLength="100" transform="rotate(135 100 100)"
-          style={{ strokeDasharray: `${(75 * GAUGE_VALUE).toFixed(1)} 100` }} />
-        <g className="pv-gauge-ticks">
-          {ticks.map((t, i) => <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} />)}
-        </g>
-        <g className="pv-gauge-lit">
-          {ticks.filter(t => t.lit).map((t, i) => <line key={i} x1={t.x1} y1={t.y1} x2={t.x2} y2={t.y2} />)}
-        </g>
-        <g className="pv-gauge-needle" transform={`rotate(${angle.toFixed(1)} 100 100)`}>
-          <path d="M100 38L103.2 100H96.8Z" />
-        </g>
-        <circle className="pv-gauge-hub" cx="100" cy="100" r="7" />
-      </svg>
-      <div className="pv-odo">
-        {ODOMETER.split('').map((n, i) => (
-          <span className={`pv-odo-digit${i === ODOMETER.length - 1 ? ' pv-odo-digit--live' : ''}`} key={i}>
-            <span className="pv-odo-col" style={{ '--d': n }}>
-              {Array.from({ length: 10 }, (_, k) => <span key={k}>{k}</span>)}
-            </span>
-          </span>
-        ))}
-        <small>km</small>
-      </div>
-      <div className="pv-gauge-label">Parc disponible</div>
-    </div>
-  );
-}
+  const autoplay = !REDUCED;
+  const paused = hover || !visible;
 
-function ProjectVisual({ type }) {
-  if (type === 'heatmap') return <HeatmapVisual />;
-  if (type === 'gauge') return <GaugeVisual />;
-  const d = "M 30 250 C 110 250 110 90 200 110 S 300 250 370 60";
   return (
-    <div className="pv pv-route" aria-hidden="true">
-      <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet">
-        <path className="pv-route-bg" d={d} />
-        <path className="pv-route-line" d={d} pathLength="1" />
-        {[[30, 250], [200, 110], [370, 60]].map(([x, y], i) => (
-          <g key={i} className="pv-stop" style={{ animationDelay: `${i * 1.3}s` }}>
-            <circle cx={x} cy={y} r="14" className="pv-stop-halo" />
-            <circle cx={x} cy={y} r="5" className="pv-stop-dot" />
-          </g>
+    <div
+      ref={ref}
+      className={`pv pv-deck${paused ? ' is-paused' : ''}${autoplay ? '' : ' is-static'}`}
+      onMouseEnter={() => FINE && setHover(true)}
+      onMouseLeave={() => setHover(false)}
+    >
+      <div className="deck-stage">
+        {shots.map((s, i) => (
+          <figure
+            className={`deck-screen${i === leaving ? ' is-leaving' : ''}`}
+            key={s.src}
+            style={{ '--d': (i - current + n) % n }}
+            aria-hidden={i !== current}
+            onAnimationEnd={(e) => { if (e.animationName === 'deck-leave') setLeaving(-1); }}
+          >
+            <div className="browser-bar" aria-hidden="true"><i></i><i></i><i></i><span className="browser-tab">{name} · {s.label}</span></div>
+            <img src={s.src} alt={`${name} : ${s.label}`} width="1280" height="800" loading="lazy" decoding="async" />
+          </figure>
         ))}
-        <g className="pv-truck">
-          <rect x="-9" y="-6" width="18" height="12" rx="3" />
-          <animateMotion dur="4s" repeatCount="indefinite" path={d} rotate="auto" keyPoints="0;1;1" keyTimes="0;0.7;1" calcMode="spline" keySplines="0.87 0 0.13 1;0 0 1 1" />
-          <animate attributeName="opacity" dur="4s" repeatCount="indefinite" values="0;1;1;0;0" keyTimes="0;0.08;0.7;0.85;1" />
-        </g>
-      </svg>
+      </div>
+      <div className="deck-ui">
+        <div className="deck-tabs">
+          {shots.map((s, i) => (
+            <button
+              type="button"
+              className={`deck-tab${i === current ? ' is-on' : ''}${i < current ? ' is-past' : ''}`}
+              key={s.src}
+              aria-label={`Afficher : ${s.label}`}
+              aria-pressed={i === current}
+              onClick={() => show(i)}
+            >
+              <span
+                className="deck-tab-fill"
+                onAnimationEnd={(e) => { if (autoplay && e.animationName === 'deck-progress') show((current + 1) % n); }}
+              ></span>
+            </button>
+          ))}
+        </div>
+        <div className="deck-caption">
+          <span className="deck-count">{String(current + 1).padStart(2, '0')} / {String(n).padStart(2, '0')}</span>
+          <span className="deck-label" key={current}>{shots[current].label}</span>
+        </div>
+      </div>
+      {note && <div className="deck-note">{note}</div>}
     </div>
   );
 }
@@ -1106,7 +1088,7 @@ function Projects() {
               </div>
             </div>
             <div className="project-visual">
-              <ProjectVisual type={p.visual} />
+              <ScreenDeck name={p.name} shots={p.shots} note={p.shotsNote} />
               <div className="project-modules">
                 {p.modules.map(m => <span key={m}>{m}</span>)}
               </div>
@@ -1807,42 +1789,37 @@ function buildBnsp() {
 
 // Visuels du deck : chaque instrument s'anime quand sa carte arrive.
 function buildVisual(card) {
-  const heat = card.querySelector('.pv-heat');
-  if (heat) {
+  // Captures : la pile se redresse comme un écran qu'on relève, puis suit le pointeur.
+  // GSAP ne touche que la scène : la profondeur de chaque écran reste pilotée par le CSS.
+  const deck = card.querySelector('.pv-deck');
+  if (deck) {
+    const stage = deck.querySelector('.deck-stage');
+    gsap.set(stage, { transformPerspective: 1400, transformOrigin: '50% 100%' });
     gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 70%' } })
-      .from(heat.querySelectorAll('.pv-heat-cell'), {
-        scale: 0,
-        autoAlpha: 0,
-        duration: 0.9,
-        ease: 'expo.out',
-        stagger: { grid: [HEAT_ROWS, HEAT_COLS], from: 'start', amount: 1.1 },
-      }, 0.3)
-      .from(heat.querySelectorAll('.pv-heat-axis span'), { autoAlpha: 0, y: 6, duration: 0.6, stagger: 0.03, ease: 'expo.out' }, 0.6)
-      .from(heat.querySelector('.pv-heat-curve'), { strokeDashoffset: 1, duration: 1.8, ease: 'expo.inOut' }, 0.5)
-      .from(heat.querySelector('.pv-heat-end'), { scale: 0, transformOrigin: '50% 50%', duration: 0.6, ease: 'back.out(3)' }, 2.1);
-  }
+      .from(stage, { rotationX: 38, y: 60, duration: 1.6, ease: 'expo.out' }, 0.2)
+      .from(deck.querySelectorAll('.deck-tab, .deck-caption, .deck-note'), { autoAlpha: 0, y: 12, duration: 0.8, stagger: 0.06, ease: 'expo.out' }, 0.7);
 
-  const gauge = card.querySelector('.pv-gauge');
-  if (gauge) {
-    const needle = gauge.querySelector('.pv-gauge-needle');
-    const angle = -135 + 270 * GAUGE_VALUE;
-    const tl = gsap.timeline({ scrollTrigger: { trigger: card, start: 'top 70%' } })
-      .fromTo(needle, { rotation: -135, svgOrigin: '100 100' }, { rotation: angle, svgOrigin: '100 100', duration: 2.4, ease: 'elastic.out(1, 0.4)' }, 0.4)
-      .fromTo(gauge.querySelector('.pv-gauge-value'), { strokeDasharray: '0 100' }, { strokeDasharray: `${(75 * GAUGE_VALUE).toFixed(1)} 100`, duration: 1.6, ease: 'expo.out' }, 0.4)
-      .from(gauge.querySelectorAll('.pv-gauge-lit line'), { autoAlpha: 0, duration: 0.3, stagger: 0.045, ease: 'none' }, 0.4)
-      .from(gauge.querySelectorAll('.pv-odo, .pv-gauge-label'), { autoAlpha: 0, y: 10, duration: 0.8, stagger: 0.1, ease: 'expo.out' }, 0.6);
-    // Le compteur déroule ses chiffres jusqu'au kilométrage ; le dernier chiffre tourne en continu (CSS).
-    gauge.querySelectorAll('.pv-odo-digit:not(.pv-odo-digit--live) .pv-odo-col').forEach((col, i) => {
-      tl.fromTo(col, { '--d': 0 }, { '--d': Number(col.style.getPropertyValue('--d')), duration: 1.8, ease: 'expo.out' }, 0.7 + i * 0.08);
-    });
-    // Au repos, l'aiguille respire légèrement autour de sa valeur.
-    tl.to(needle, { rotation: angle - 2, svgOrigin: '100 100', duration: 1.8, ease: 'sine.inOut', repeat: -1, yoyo: true });
+    if (!FINE) return;
+    const rx = gsap.quickTo(stage, 'rotationX', { duration: 1, ease: 'power3' });
+    const ry = gsap.quickTo(stage, 'rotationY', { duration: 1, ease: 'power3' });
+    const move = (e) => {
+      const r = deck.getBoundingClientRect();
+      ry(((e.clientX - r.left) / r.width - 0.5) * 10);
+      rx((0.5 - (e.clientY - r.top) / r.height) * 7);
+    };
+    const leave = () => { rx(0); ry(0); };
+    deck.addEventListener('mousemove', move);
+    deck.addEventListener('mouseleave', leave);
+    return () => {
+      deck.removeEventListener('mousemove', move);
+      deck.removeEventListener('mouseleave', leave);
+    };
   }
 }
 
 function buildProjects() {
   // L'étude de cas précède le deck dans la page : ses déclencheurs sont créés en premier.
-  const cleanupBnsp = buildBnsp();
+  const cleanups = [buildBnsp()];
   const cards = gsap.utils.toArray('.project-card');
   const stacked = window.matchMedia('(min-width: 901px)').matches;
 
@@ -1865,7 +1842,7 @@ function buildProjects() {
       .from(card.querySelectorAll('.project-features li'), { autoAlpha: 0, x: -20, duration: 0.8, stagger: 0.06, ease: 'expo.out' }, 0.4)
       .from(card.querySelectorAll('.project-stack .xp-pill, .project-modules span'), { autoAlpha: 0, scale: 0.6, duration: 0.6, stagger: 0.04, ease: 'back.out(2)' }, 0.5)
       .from(card.querySelector('.pv'), { autoAlpha: 0, scale: 0.85, duration: 1.4, ease: 'expo.out' }, 0.2);
-    buildVisual(card);
+    cleanups.push(buildVisual(card));
 
     // Stacked deck: each card recedes as the next one slides over it.
     const next = cards[i + 1];
@@ -1880,7 +1857,7 @@ function buildProjects() {
     }
   });
 
-  return cleanupBnsp;
+  return () => cleanups.forEach(fn => fn && fn());
 }
 
 function buildMarquee() {

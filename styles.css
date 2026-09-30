@@ -955,167 +955,126 @@ html.lenis, html.lenis body { height: auto; }
 
 .pv { position: relative; width: min(100%, 360px); aspect-ratio: 1; margin-bottom: 40px; }
 
-/* Visual: heatmap (Mercurio) — CA zone × mois, avec la courbe mensuelle au-dessus */
-.pv-heat {
+/* Visual: captures d'application empilées */
+.pv-deck {
+  width: 100%;
+  aspect-ratio: auto;
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  gap: 12px;
+  gap: 20px;
 }
-.pv-heat-line { width: 100%; aspect-ratio: 4 / 1; overflow: visible; }
-.pv-heat-curve {
-  fill: none;
-  stroke: var(--fg);
-  stroke-width: 0.8;
-  stroke-linejoin: round;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 0;
-}
-.pv-heat-end { fill: var(--accent); }
-.pv-heat-grid {
+/* Marge haute : les écrans en retrait dépassent au-dessus de celui de devant. */
+.deck-stage {
   position: relative;
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 3px;
+  aspect-ratio: 16 / 11;
+  margin-top: 13%;
 }
-.pv-heat-cell {
-  aspect-ratio: 1;
-  border-radius: 3px;
-  background: var(--accent);
-  opacity: calc(0.08 + var(--v) * 0.92);
+/* Sur grand écran, la pile déborde à droite de la carte, qui la rogne : l'écran gagne en lisibilité. */
+@media (min-width: 901px) {
+  .pv-deck { align-items: flex-start; }
+  .deck-stage { width: 122%; }
 }
-/* Colonne « survolée » qui parcourt les mois : largeur = pas de la grille (cellule + gouttière) */
-.pv-heat-scan {
+@media (max-width: 720px) {
+  .deck-ui { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .deck-caption { white-space: normal; }
+}
+.deck-screen {
+  --d: 0;
   position: absolute;
-  top: -4px; bottom: -4px;
-  left: -1.5px;
-  width: calc((100% + 3px) / 12);
-  border: 1px solid var(--fg);
-  border-radius: 5px;
-  pointer-events: none;
-  animation: heat-scan 7.2s steps(12) infinite;
-}
-@keyframes heat-scan { to { transform: translateX(1200%); } }
-.pv-heat-axis {
-  display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 3px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 9px;
-  letter-spacing: 0.1em;
-  text-align: center;
-  color: var(--fg-mute);
-}
-
-/* Visual: jauge + compteur kilométrique (Globo Fleet) */
-.pv-gauge svg { width: 100%; height: 100%; overflow: visible; }
-.pv-gauge-track {
-  fill: none;
-  stroke: var(--line);
-  stroke-width: 2;
-  stroke-dasharray: 75 100;
-}
-.pv-gauge-value {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 6px color-mix(in oklch, var(--accent) 60%, transparent));
-}
-.pv-gauge-ticks line { stroke: var(--line); stroke-width: 1.4; }
-.pv-gauge-lit line { stroke: var(--accent); stroke-width: 1.4; }
-.pv-gauge-needle path { fill: var(--fg); }
-.pv-gauge-hub { fill: var(--bg-3); stroke: var(--fg); stroke-width: 1.5; }
-.pv-odo {
-  position: absolute;
-  left: 0; right: 0; top: 67%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 2px;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: clamp(17px, 2vw, 24px);
-  font-weight: 300;
-  line-height: 1;
-  color: var(--fg);
-}
-.pv-odo-digit {
-  display: inline-block;
-  width: 0.78em;
-  height: 1.3em;
-  overflow: hidden;
-  text-align: center;
-  border-radius: 3px;
-  background: var(--bg);
-  border: 1px solid var(--line);
-}
-.pv-odo-digit:nth-child(4) { margin-left: 0.3em; }
-.pv-odo-col {
+  inset: 0;
+  margin: 0;
   display: flex;
   flex-direction: column;
-  transform: translateY(calc(var(--d) * -10%));
+  overflow: hidden;
+  border-radius: 10px;
+  background: #f4f5f7;
+  border: 1px solid oklch(0.34 0.012 70);
+  box-shadow: 0 40px 70px -30px rgb(0 0 0 / 0.8);
+  container-type: inline-size;
+  transform-origin: 50% 0%;
+  transform: translateY(calc(var(--d) * -7%)) scale(calc(1 - var(--d) * 0.07));
+  filter: brightness(calc(1 - var(--d) * 0.3));
+  z-index: calc(3 - var(--d));
+  transition: transform 0.9s var(--ease-out), filter 0.9s var(--ease-out);
 }
-.pv-odo-col span { display: block; height: 1.3em; line-height: 1.3em; }
-/* Dernier chiffre : le parc roule, le compteur tourne */
-.pv-odo-digit--live .pv-odo-col { color: var(--accent); animation: odo-tick 10s steps(10) infinite; }
-@keyframes odo-tick { to { transform: translateY(-100%); } }
-.pv-odo small {
-  margin-left: 8px;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--fg-mute);
+.deck-screen img {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  object-fit: cover;
+  object-position: top left;
+  display: block;
 }
-.pv-gauge-label {
-  position: absolute;
-  left: 0; right: 0; top: 83%;
-  text-align: center;
-  font-family: 'JetBrains Mono', monospace;
-  font-size: 10px;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--fg-mute);
+/* L'écran de devant plonge, puis reparaît au fond de la pile. */
+.deck-screen.is-leaving { animation: deck-leave 1s var(--ease-in-out) both; }
+@keyframes deck-leave {
+  0% { transform: none; filter: brightness(1); opacity: 1; z-index: 5; }
+  45% { transform: translateY(18%) rotate(-3deg) scale(0.96); opacity: 0; z-index: 5; }
+  55% { transform: translateY(calc(var(--d) * -7%)) scale(calc(1 - var(--d) * 0.07)); opacity: 0; z-index: 0; }
+  100% { transform: translateY(calc(var(--d) * -7%)) scale(calc(1 - var(--d) * 0.07)); filter: brightness(calc(1 - var(--d) * 0.3)); opacity: 1; z-index: 0; }
 }
 
-/* Visual: route (PTS) */
-.pv-route svg { width: 100%; height: 100%; overflow: visible; }
-.pv-route-bg {
-  fill: none;
-  stroke: var(--line);
-  stroke-width: 2;
-  stroke-dasharray: 4 8;
+.deck-ui {
+  display: flex;
+  align-items: center;
+  gap: 18px;
 }
-.pv-route-line {
-  fill: none;
-  stroke: var(--accent);
-  stroke-width: 2;
-  stroke-linecap: round;
-  stroke-dasharray: 1;
-  stroke-dashoffset: 1;
-  animation: draw-route 4s var(--ease-in-out) infinite;
+.deck-tabs { display: flex; gap: 6px; flex: none; }
+.deck-tab {
+  width: 36px;
+  height: 14px;
+  padding: 6px 0;
+  background: linear-gradient(var(--line), var(--line)) center / 100% 2px no-repeat;
+  cursor: pointer;
 }
-@keyframes draw-route {
-  0% { stroke-dashoffset: 1; }
-  70%, 85% { stroke-dashoffset: 0; }
-  100% { stroke-dashoffset: -1; }
+.deck-tab-fill {
+  display: block;
+  height: 2px;
+  background: var(--accent);
+  transform: scaleX(0);
+  transform-origin: left center;
 }
-.pv-stop-dot { fill: var(--fg); }
-.pv-stop-halo {
-  fill: color-mix(in oklch, var(--accent) 20%, transparent);
-  stroke: var(--accent);
-  stroke-width: 1;
-  transform-box: fill-box;
-  transform-origin: center;
-  animation: stop-pulse 4s var(--ease-out) infinite;
+.deck-tab.is-past .deck-tab-fill { transform: scaleX(1); }
+.deck-tab.is-on .deck-tab-fill { animation: deck-progress 5s linear forwards; }
+.pv-deck.is-paused .deck-tab.is-on .deck-tab-fill { animation-play-state: paused; }
+.pv-deck.is-static .deck-tab.is-on .deck-tab-fill { animation: none; transform: scaleX(1); }
+@keyframes deck-progress { to { transform: scaleX(1); } }
+
+.deck-caption {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  min-width: 0;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  overflow: hidden;
 }
-@keyframes stop-pulse {
-  0%, 100% { transform: scale(0.6); opacity: 0.3; }
-  30% { transform: scale(1.2); opacity: 1; }
+.deck-count { color: var(--accent); }
+.deck-label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--fg-dim);
+  animation: deck-caption 0.7s var(--ease-out);
 }
-.pv-truck rect {
-  fill: var(--accent);
-  filter: drop-shadow(0 0 8px var(--accent));
+@keyframes deck-caption { from { opacity: 0; transform: translateY(70%); } }
+.deck-note {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: var(--fg-mute);
+}
+.deck-note::before {
+  content: '';
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  margin-right: 10px;
+  border-radius: 50%;
+  background: var(--accent);
+  vertical-align: 0.05em;
 }
 
 @media (max-width: 900px) {
