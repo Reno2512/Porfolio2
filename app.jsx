@@ -8,17 +8,26 @@ const PROFILE = {
   location: "Rufisque Ouest — Sénégal",
   email: "sagneemma25@gmail.com",
   phone: "+221 77 866 20 79",
-  available: "Disponible — Q3 2026",
+  available: "En poste — Globo Afrique",
 };
 
 const EXPERIENCES = [
   {
-    period: "Oct 2024 — Présent",
+    period: "Oct 2026 — Présent",
+    title: "Développeur Fullstack",
+    company: "Globo Afrique Dakar",
+    mono: "GA",
+    role: "CDD — Contractuel",
+    desc: "Recruté en contrat à l'issue du stage. Conception, développement et maintenance des plateformes métiers de Globo Afrique, de l'API jusqu'à la mise en production.",
+    stack: ["Angular", "React", "Node.js", "MySQL"],
+  },
+  {
+    period: "Oct 2024 — Sept 2026",
     title: "Développeur Fullstack",
     company: "Globo Afrique Dakar",
     mono: "GA",
     role: "Stagiaire",
-    desc: "Conception de deux plateformes métiers : suivi des livraisons Petrosen et gestion des interventions / affectation des pompiers. Architecture front modulaire, intégration API et tableaux de bord opérationnels.",
+    desc: "Conception de plateformes métiers : suivi des livraisons Petrosen et gestion des interventions / affectation des pompiers. Architecture front modulaire, intégration API et tableaux de bord opérationnels.",
     stack: ["React", "Angular", "REST", "UI/UX"],
   },
   {
@@ -412,14 +421,14 @@ function Hero() {
           </span>
         </h1>
 
-        <a href="#contact" className="badge" data-magnetic="0.5" data-cursor-label="Contact" aria-label="Disponible — me contacter">
+        <a href="#contact" className="badge" data-magnetic="0.5" data-cursor-label="Contact" aria-label="En poste chez Globo Afrique — me contacter">
           <svg className="badge-ring" viewBox="0 0 200 200" aria-hidden="true">
             <defs>
               <path id="badge-circle" d="M100,100 m-80,0 a80,80 0 1,1 160,0 a80,80 0 1,1 -160,0" />
             </defs>
             <text>
               <textPath href="#badge-circle" textLength="500" lengthAdjust="spacing">
-                Disponible · Q3 2026 · Ouvert aux projets ·
+                En poste · Globo Afrique · Dakar · Fullstack ·
               </textPath>
             </text>
           </svg>
@@ -443,7 +452,7 @@ function Hero() {
         </div>
         <div className="col hero-fade">
           <div className="label">Statut</div>
-          <div className="value status"><span className="live"></span>Disponible</div>
+          <div className="value status"><span className="live"></span>En poste · CDD</div>
         </div>
         <a href="#about" className="scroll-cta hero-fade">
           <span>Défiler</span>
@@ -490,7 +499,7 @@ function About() {
           </p>
 
           <div className="about-stats">
-            {[[4, 'Expériences'], [6, 'Années de code'], [1, 'Certif. Security+']].map(([n, l]) => (
+            {[[5, 'Expériences'], [6, 'Années de code'], [1, 'Certif. Security+']].map(([n, l]) => (
               <div className="stat" key={l}>
                 <span className="stat-rule"></span>
                 <div className="n" data-count={n}>{String(n).padStart(2, '0')}</div>
@@ -544,7 +553,7 @@ function Experience() {
   return (
     <section className="section" id="work">
       <span className="rule"></span>
-      <SectionHead num="02" label="Expériences" title="Quatre terrains. Une méthode." />
+      <SectionHead num="02" label="Expériences" title="Cinq terrains. Une méthode." />
       <div className="xp-list" data-cursor="hide">
         {EXPERIENCES.map((x, i) => (
           <article className="xp-item" key={i}>
