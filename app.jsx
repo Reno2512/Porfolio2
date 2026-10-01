@@ -8,6 +8,7 @@ const PROFILE = {
   location: "Rufisque Ouest — Sénégal",
   email: "sagneemma25@gmail.com",
   phone: "+221 77 866 20 79",
+  linkedin: "https://www.linkedin.com/in/robert-emmanuel-mamadou-sagne-b03500235/",
   available: "En poste — Globo Afrique",
 };
 
@@ -1235,7 +1236,7 @@ function Contact() {
       </div>
       <div className="cta-links">
         <a href={`tel:${PROFILE.phone}`} data-magnetic="0.25">+221 77 866 20 79</a>
-        <a href="#" target="_blank" rel="noopener" data-magnetic="0.25">LinkedIn ↗</a>
+        <a href={PROFILE.linkedin} target="_blank" rel="noopener" data-magnetic="0.25">LinkedIn ↗</a>
         <a href={CV.href} download={CV.file} data-magnetic="0.25">CV · PDF ↓</a>
         <a href="#top" data-magnetic="0.25">Retour haut ↑</a>
       </div>
