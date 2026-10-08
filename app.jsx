@@ -232,12 +232,33 @@ const EDUCATION = [
 
 // CV généré depuis cv/cv.html : `node cv/build.mjs` refait le PDF et la vignette.
 const CV = {
+  label: "Standard",
+  format: "PDF · A4",
+  pages: "1",
+  ratio: "210 / 297",
+  lead: "Expériences, projets, stack et formation, condensés sur une page A4 : lisible d'un coup d'œil, prête à imprimer ou à transmettre.",
   href: "cv/Robert-Emmanuel-Sagne-CV.pdf",
   file: "Robert-Emmanuel-Sagne-CV.pdf",
   preview: "cv/cv-preview.webp",
   size: "356 Ko",
   updated: "Sept. 2026",
 };
+
+// Version aux usages canadiens (format Lettre US, deux pages, une colonne lisible par les ATS) : cv/cv-canada.html.
+const CV_CANADA = {
+  label: "Canada",
+  format: "PDF · Lettre US",
+  pages: "2",
+  ratio: "8.5 / 11",
+  lead: "Format Lettre US, une seule colonne lisible par les logiciels de recrutement, réalisations en verbes d'action : sans photo, ni âge, ni adresse complète, comme l'attendent les recruteurs canadiens.",
+  href: "cv/Robert-Emmanuel-Sagne-CV-Canada.pdf",
+  file: "Robert-Emmanuel-Sagne-CV-Canada.pdf",
+  preview: "cv/cv-canada-preview.webp",
+  size: "108 Ko",
+  updated: "Oct. 2026",
+};
+
+const CV_VERSIONS = [CV, CV_CANADA];
 
 // ============== MOTION SYSTEM ==============
 const REDUCED = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -1155,7 +1176,45 @@ function Education() {
 // Le CV sort d'une fente d'imprimante au fil du défilement. Le DOM porte l'état final (feuille sortie) :
 // buildCv pose l'état initial et rejoue l'impression.
 function CvDrop() {
-  const meta = [['Format', 'PDF · A4'], ['Pages', '1'], ['Poids', CV.size], ['Mise à jour', CV.updated]];
+  const [idx, setIdx] = useState(0);
+  const c = CV_VERSIONS[idx];
+  const tiltRef = useRef(null);
+  const printerRef = useRef(null);
+  const imgRef = useRef(null);
+  const swapping = useRef(false);
+  const reprint = useRef(false);
+
+  // Changer de version : la feuille rentre dans la fente, la nouvelle est imprimée à sa place.
+  const choose = (i) => {
+    if (i === idx || swapping.current) return;
+    if (!MOTION) { setIdx(i); return; }
+    swapping.current = true;
+    printerRef.current.classList.add('is-printing');
+    gsap.to(tiltRef.current, {
+      yPercent: 104,
+      duration: 0.55,
+      ease: 'power3.in',
+      onComplete: () => { reprint.current = true; setIdx(i); },
+    });
+  };
+
+  useEffect(() => {
+    if (!reprint.current) return;
+    reprint.current = false;
+    const img = imgRef.current;
+    const out = () => gsap.to(tiltRef.current, {
+      yPercent: 0,
+      duration: 1.5,
+      ease: 'power2.out',
+      onComplete: () => {
+        printerRef.current.classList.remove('is-printing');
+        swapping.current = false;
+      },
+    });
+    if (img.complete) out(); else img.addEventListener('load', out, { once: true });
+  }, [idx]);
+
+  const meta = [['Format', c.format], ['Pages', c.pages], ['Poids', c.size], ['Mise à jour', c.updated]];
   return (
     <div className="cvd">
       <div className="cvd-copy">
@@ -1164,14 +1223,29 @@ function CvDrop() {
           <span className="sep">·</span>
           <span data-scramble>Version imprimable</span>
         </div>
-        <h3 className="cvd-title split-words">Tout le parcours, <em>sur une page.</em></h3>
-        <p className="cvd-lead">
-          Expériences, projets, stack et formation, condensés sur une page A4 : lisible d'un coup d'œil, prête à imprimer ou à transmettre.
-        </p>
+        <h3 className="cvd-title split-words">Tout le parcours, <em>prêt à envoyer.</em></h3>
+        <div className="cvd-switch" role="radiogroup" aria-label="Version du CV" style={{ '--x': idx }}>
+          <span className="cvd-switch-pill" aria-hidden="true"></span>
+          {CV_VERSIONS.map((v, i) => (
+            <button
+              key={v.label}
+              type="button"
+              role="radio"
+              aria-checked={i === idx}
+              className={i === idx ? 'is-on' : ''}
+              onClick={() => choose(i)}
+              data-cursor="hover"
+            >
+              <span>{v.label}</span>
+              <small>{v.format.replace('PDF · ', '')}</small>
+            </button>
+          ))}
+        </div>
+        <p className="cvd-lead" key={c.label}>{c.lead}</p>
         <dl className="cvd-meta">
           {meta.map(([k, v]) => <div key={k}><dt>{k}</dt><dd>{v}</dd></div>)}
         </dl>
-        <a href={CV.href} download={CV.file} className="cvd-btn" data-magnetic="0.2" data-cursor="hide">
+        <a href={c.href} download={c.file} className="cvd-btn" data-magnetic="0.2" data-cursor="hide">
           <span className="cvd-btn-fill"></span>
           <span className="cvd-btn-ic" aria-hidden="true">
             <svg viewBox="0 0 44 44" fill="none">
@@ -1182,29 +1256,29 @@ function CvDrop() {
           </span>
           <span className="cvd-btn-label">
             <span className="cvd-btn-roll">
-              <span>Télécharger le CV</span>
+              <span>{idx ? 'Télécharger le CV Canada' : 'Télécharger le CV'}</span>
               <span aria-hidden="true">Téléchargement…</span>
               <span aria-hidden="true">Téléchargé</span>
             </span>
           </span>
-          <span className="cvd-btn-meta">PDF · {CV.size}</span>
+          <span className="cvd-btn-meta">PDF · {c.size}</span>
           <span className="cvd-btn-bar"></span>
         </a>
       </div>
 
       <div className="cvd-stage">
-        <div className="cvd-printer">
+        <div className="cvd-printer" ref={printerRef}>
           <div className="cvd-feed">
-            <div className="cvd-tilt">
-              <a href={CV.href} target="_blank" rel="noopener" className="cvd-sheet" data-cursor-label="Voir" aria-label="Ouvrir le CV (PDF) dans un nouvel onglet">
-                <img src={CV.preview} alt="" width="794" height="1123" loading="lazy" decoding="async" />
+            <div className="cvd-tilt" ref={tiltRef}>
+              <a href={c.href} target="_blank" rel="noopener" className="cvd-sheet" style={{ aspectRatio: c.ratio }} data-cursor-label="Voir" aria-label={`Ouvrir le CV ${c.label} (PDF) dans un nouvel onglet`}>
+                <img ref={imgRef} src={c.preview} alt="" width={idx ? 816 : 794} height={idx ? 1056 : 1123} loading="lazy" decoding="async" />
                 <span className="cvd-scan"></span>
                 <span className="cvd-glare"></span>
               </a>
             </div>
           </div>
           <div className="cvd-slot" aria-hidden="true">
-            <span className="cvd-slot-label">RE/MS · A4</span>
+            <span className="cvd-slot-label">RE/MS · {idx ? 'Lettre US' : 'A4'}</span>
             <span className="cvd-led"></span>
           </div>
         </div>
@@ -1238,6 +1312,7 @@ function Contact() {
         <a href={`tel:${PROFILE.phone}`} data-magnetic="0.25">+221 77 866 20 79</a>
         <a href={PROFILE.linkedin} target="_blank" rel="noopener" data-magnetic="0.25">LinkedIn ↗</a>
         <a href={CV.href} download={CV.file} data-magnetic="0.25">CV · PDF ↓</a>
+        <a href={CV_CANADA.href} download={CV_CANADA.file} data-magnetic="0.25">CV Canada ↓</a>
         <a href="#top" data-magnetic="0.25">Retour haut ↑</a>
       </div>
     </section>

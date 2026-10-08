@@ -2155,6 +2155,61 @@ html.lenis, html.lenis body { height: auto; }
 }
 .cvd-meta dd { font-family: 'JetBrains Mono', monospace; font-size: 13px; }
 
+/* Choix de la version : une pastille glisse sous l'option active. */
+.cvd-switch {
+  --x: 0;
+  position: relative;
+  display: inline-grid;
+  grid-template-columns: 1fr 1fr;
+  margin-top: 30px;
+  padding: 4px;
+  border: 1px solid var(--line);
+  border-radius: 100px;
+  isolation: isolate;
+}
+.cvd-switch-pill {
+  position: absolute;
+  top: 4px; bottom: 4px; left: 4px;
+  width: calc(50% - 4px);
+  border-radius: 100px;
+  background: var(--accent);
+  transform: translateX(calc(var(--x) * 100%));
+  transition: transform 0.7s var(--ease-out);
+  z-index: -1;
+}
+.cvd-switch button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 132px;
+  padding: 9px 20px 8px;
+  border-radius: 100px;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-dim);
+  cursor: pointer;
+  transition: color 0.4s var(--ease-out);
+}
+.cvd-switch button small {
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  color: var(--fg-mute);
+  transition: color 0.4s var(--ease-out);
+}
+.cvd-switch button:hover { color: var(--fg); }
+.cvd-switch button.is-on,
+.cvd-switch button.is-on small { color: var(--bg); }
+.cvd-switch button:focus-visible { outline: 1px solid var(--accent); outline-offset: 3px; }
+
+/* Hauteur réservée : changer de version ne fait pas sauter la suite. */
+.cvd-lead { min-height: 6.2em; animation: cvd-lead-in 0.7s var(--ease-out); }
+@keyframes cvd-lead-in {
+  from { opacity: 0; transform: translateY(10px); }
+}
+
 /* Bouton : même remplissage circulaire que le bouton e-mail, plus une icône qui raconte le téléchargement. */
 .cvd-btn {
   margin-top: 44px;
@@ -2336,6 +2391,7 @@ html.lenis, html.lenis body { height: auto; }
   .cvd-meta div { padding-right: 16px; }
   .cvd-btn { gap: 12px; padding-right: 20px; font-size: 13px; }
   .cvd-btn-meta { display: none; }
+  .cvd-switch button { min-width: 0; padding: 9px 14px 8px; }
 }
 
 /* ============== CONTACT ============== */
